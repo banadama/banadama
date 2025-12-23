@@ -25,6 +25,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
+*.txt
+!README.md
+!LICENSE
+!CONTRIBUTING.md
+!*.env.example
 
 # build/dist
 dist/
