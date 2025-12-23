@@ -16,6 +16,7 @@ out/
 .env.test
 .env.example.local
 .env.*
+*.env
 !.env.example
 
 # logs
