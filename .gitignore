@@ -25,11 +25,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
-*.txt
-!README.md
-!LICENSE
-!CONTRIBUTING.md
-!*.env.example
+
+# debug artifacts (specific)
+last_error.txt
+missing_rbac.txt
+app_structure.txt
+big_errors.txt
+schema_errors.log
+prisma_errors.txt
+build_log*.txt
+dev_log*.txt
+errors.txt
+vapid.txt
+vapid.env
 
 # build/dist
 dist/
@@ -39,6 +47,3 @@ coverage/
 # misc
 .DS_Store
 Thumbs.db
-vapid.txt
-vapid.env
-*.env
