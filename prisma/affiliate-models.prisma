@@ -1,0 +1,213 @@
+
+// ============================================
+// AFFILIATE MODE ENUMS
+// ============================================
+
+enum AffiliateStatus {
+  PENDING     // Application submitted
+  ACTIVE      // Approved and active
+  SUSPENDED   // Temporarily suspended
+  BANNED      // Permanently banned
+}
+
+enum AffiliateSaleStatus {
+  PENDING          // Order placed, awaiting delivery
+  ESCROW_LOCKED    // Payment in escrow
+  DELIVERED        // Delivery confirmed, earning unlocked
+  PAID             // Commission paid to affiliate
+  CANCELLED        // Order cancelled, no commission
+  DISPUTED         // Under dispute
+}
+
+enum AffiliatePayoutStatus {
+  PENDING         // Requested by affiliate
+  PENDING_FINANCE // Awaiting FINANCE_ADMIN approval
+  APPROVED        // Approved by Finance
+  PROCESSING      // Being processed
+  COMPLETED       // Paid out
+  REJECTED        // Rejected by Finance
+}
+
+// ============================================
+// AFFILIATE MODE MODELS
+// ============================================
+
+model AffiliateProfile {
+  id             String          @id @default(cuid())
+  
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String          @unique
+  
+  // Profile info
+  displayName    String?
+  bio            String?
+  website        String?
+  
+  // Status
+  status         AffiliateStatus @default(PENDING)
+  approvedAt     DateTime?
+  approvedByAdminId String?
+  
+  suspendedAt    DateTime?
+  suspendReason  String?
+  suspendedByAdminId String?
+  
+  // Stats (denormalized for performance)
+  totalClicks    Int             @default(0)
+  totalSales     Int             @default(0)
+  totalEarnings  Int             @default(0)  // In kobo
+  pendingEarnings Int            @default(0)  // Unlocked but not withdrawn
+  paidEarnings   Int             @default(0)  // Already paid out
+  
+  // Commission rate (override from global, null = use global)
+  customCommissionRate Float?
+  
+  // Relations
+  links          AffiliateLink[]
+  sales          AffiliateSale[]
+  payouts        AffiliatePayout[]
+  
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  
+  @@index([status])
+  @@index([userId])
+}
+
+model AffiliateLink {
+  id             String          @id @default(cuid())
+  
+  affiliate      AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  affiliateId    String
+  
+  // Tracking
+  trackingCode   String          @unique
+  
+  // Target (what this link points to)
+  targetType     String          // "PRODUCT", "SUPPLIER", "CATEGORY", "MARKETPLACE"
+  targetId       String?         // Product/Supplier/Category ID if applicable
+  
+  // Custom URL parameters
+  customParams   Json?
+  name           String?         // Friendly name for the link
+  
+  // Stats
+  clicks         Int             @default(0)
+  uniqueClicks   Int             @default(0)
+  sales          Int             @default(0)
+  earnings       Int             @default(0)  // In kobo
+  
+  isActive       Boolean         @default(true)
+  
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  
+  // Relations
+  affiliateSales AffiliateSale[]
+  
+  @@index([affiliateId])
+  @@index([trackingCode])
+  @@index([targetType, targetId])
+}
+
+model AffiliateSale {
+  id             String              @id @default(cuid())
+  
+  affiliate      AffiliateProfile    @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  affiliateId    String
+  
+  link           AffiliateLink?      @relation(fields: [linkId], references: [id])
+  linkId         String?
+  
+  // Order reference
+  orderId        String
+  orderAmount    Int                 // Order total in kobo
+  
+  // Buyer (for self-referral detection)
+  buyerId        String
+  
+  // Commission calculation
+  commissionRate Float               // Rate at time of sale (e.g., 0.05 = 5%)
+  commissionAmount Int               // In kobo
+  
+  status         AffiliateSaleStatus @default(PENDING)
+  
+  // Timeline
+  orderCreatedAt DateTime
+  deliveryConfirmedAt DateTime?
+  earningUnlockedAt DateTime?
+  paidAt         DateTime?
+  
+  // If cancelled/disputed
+  cancelledAt    DateTime?
+  cancelReason   String?
+  
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  
+  @@index([affiliateId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model AffiliatePayout {
+  id             String               @id @default(cuid())
+  
+  affiliate      AffiliateProfile     @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  affiliateId    String
+  
+  amount         Int                  // In kobo
+  
+  status         AffiliatePayoutStatus @default(PENDING)
+  
+  // Finance approval
+  submittedAt    DateTime             @default(now())
+  approvedByAdminId String?
+  approvedAt     DateTime?
+  
+  rejectedByAdminId String?
+  rejectedAt     DateTime?
+  rejectionReason String?
+  
+  // Payment execution
+  processedAt    DateTime?
+  paymentMethod  String?
+  paymentReference String?
+  
+  // Audit
+  notes          String?
+  
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  
+  @@index([affiliateId])
+  @@index([status])
+}
+
+model AffiliateSettings {
+  id                String   @id @default(cuid())
+  
+  // Global commission rate (default for all affiliates)
+  defaultCommissionRate Float @default(0.05)  // 5%
+  
+  // Category-specific rates
+  categoryRates   Json?    // { "fashion-fabrics": 0.07, "packaging": 0.04 }
+  
+  // Minimum payout
+  minimumPayout   Int      @default(500000)  // ₦5,000 in kobo
+  
+  // Self-referral protection
+  blockSelfReferral Boolean @default(true)
+  
+  // Cookie duration (days)
+  cookieDuration  Int      @default(30)
+  
+  // Is affiliate program enabled
+  isEnabled       Boolean  @default(true)
+  
+  // Who can join
+  requireApproval Boolean  @default(true)
+  
+  updatedAt       DateTime @updatedAt
+  updatedByAdminId String?
+}

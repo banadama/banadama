@@ -1,0 +1,280 @@
+
+// ============================================
+// INTERNATIONAL TRADE MODE ENUMS
+// ============================================
+
+enum TradeMode {
+  LOCAL                    // NG + BD internal trade
+  INTERNATIONAL_BUY_ONLY   // Global buyers, no selling
+}
+
+enum TradeCountryStatus {
+  ENABLED     // Can buy from platform
+  DISABLED    // Blocked
+  PENDING     // Under review
+}
+
+enum InternationalOrderStatus {
+  PENDING_REVIEW      // Awaiting Ops review
+  DOCS_REQUIRED       // Waiting for trade documents
+  DOCS_SUBMITTED      // Documents uploaded
+  DOCS_APPROVED       // Ops approved documents
+  SHIPPING_ARRANGED   // Shipping method selected
+  IN_TRANSIT          // Shipped, in transit
+  CUSTOMS_CLEARANCE   // At customs
+  DELIVERED           // Buyer received
+  COMPLETED           // Finance released payout
+  CANCELLED           // Cancelled
+  DISPUTED            // Under dispute
+}
+
+enum TradeDocumentType {
+  COMMERCIAL_INVOICE
+  PACKING_LIST
+  CERTIFICATE_OF_ORIGIN
+  CUSTOMS_DECLARATION
+  EXPORT_LICENSE
+  IMPORT_PERMIT
+  OTHER
+}
+
+enum TradeDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum ShippingMethod {
+  AIR
+  SEA
+  ROAD
+  COURIER
+}
+
+// ============================================
+// INTERNATIONAL TRADE MODE MODELS
+// ============================================
+
+model TradeCountry {
+  id                String             @id @default(cuid())
+  
+  code              String             @unique  // ISO 3166-1 alpha-2 (e.g., "US", "UK")
+  name              String
+  region            String?            // "EUROPE", "ASIA", "AMERICAS", etc.
+  
+  status            TradeCountryStatus @default(DISABLED)
+  
+  // Trade rules
+  allowBuyNow       Boolean            @default(true)
+  allowRfq          Boolean            @default(true)
+  requireDocsReview Boolean            @default(true)
+  
+  // Allowed categories (null = all allowed)
+  allowedCategories String[]           @default([])
+  blockedCategories String[]           @default([])
+  
+  // Shipping requirements
+  shippingMethods   ShippingMethod[]   @default([AIR, SEA])
+  
+  // Buyer verification requirements
+  requireBlueTick   Boolean            @default(false)
+  highValueThreshold Int?              // Above this, require BLUE tick (in kobo)
+  
+  // Documents typically required
+  requiredDocuments TradeDocumentType[] @default([COMMERCIAL_INVOICE, PACKING_LIST])
+  
+  // FX settings
+  defaultCurrency   String             @default("USD")
+  
+  // Admin tracking
+  enabledAt         DateTime?
+  enabledByAdminId  String?
+  disabledAt        DateTime?
+  disabledByAdminId String?
+  disableReason     String?
+  
+  notes             String?
+  
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relations
+  orders            InternationalOrder[]
+  
+  @@index([code])
+  @@index([status])
+}
+
+model InternationalOrder {
+  id                String                    @id @default(cuid())
+  
+  // Link to main order
+  order             Order                     @relation(fields: [orderId], references: [id])
+  orderId           String                    @unique
+  
+  // Trade country
+  buyerCountry      TradeCountry              @relation(fields: [buyerCountryCode], references: [code])
+  buyerCountryCode  String
+  
+  // Trade mode
+  tradeMode         TradeMode                 @default(INTERNATIONAL_BUY_ONLY)
+  
+  // Status
+  status            InternationalOrderStatus  @default(PENDING_REVIEW)
+  
+  // Verification requirements met
+  supplierGreenTick Boolean                   @default(false)
+  buyerBlueTick     Boolean                   @default(false)
+  
+  // FX snapshot at order time
+  originalCurrency  String                    // Buyer's currency
+  originalAmount    Int                       // Amount in buyer's currency
+  convertedAmount   Int                       // Amount in platform currency (NGN)
+  fxRate            Float                     // Exchange rate used
+  fxSnapshotAt      DateTime                  // When rate was captured
+  
+  // Ops assignment
+  assignedOpsId     String?
+  assignedAt        DateTime?
+  
+  // Timeline
+  docsSubmittedAt   DateTime?
+  docsApprovedAt    DateTime?
+  docsApprovedByOpsId String?
+  
+  shippingArrangedAt DateTime?
+  shippedAt         DateTime?
+  
+  customsClearanceAt DateTime?
+  deliveredAt       DateTime?
+  
+  completedAt       DateTime?
+  
+  // Notes
+  opsNotes          String?
+  internalNotes     String?
+  
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  
+  // Relations
+  documents         TradeDocument[]
+  shipment          TradeShipment?
+  
+  @@index([orderId])
+  @@index([buyerCountryCode])
+  @@index([status])
+  @@index([assignedOpsId])
+}
+
+model TradeDocument {
+  id                String              @id @default(cuid())
+  
+  internationalOrder InternationalOrder @relation(fields: [internationalOrderId], references: [id], onDelete: Cascade)
+  internationalOrderId String
+  
+  type              TradeDocumentType
+  name              String
+  fileUrl           String
+  
+  status            TradeDocumentStatus @default(PENDING)
+  
+  // Review
+  reviewedByOpsId   String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  rejectionReason   String?
+  
+  // Expiry (for certificates)
+  expiresAt         DateTime?
+  
+  // Metadata
+  metadata          Json?
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  @@index([internationalOrderId])
+  @@index([type])
+  @@index([status])
+}
+
+model TradeShipment {
+  id                String              @id @default(cuid())
+  
+  internationalOrder InternationalOrder @relation(fields: [internationalOrderId], references: [id], onDelete: Cascade)
+  internationalOrderId String           @unique
+  
+  // Shipping details
+  method            ShippingMethod
+  carrier           String?
+  trackingNumber    String?
+  
+  // Timeline
+  estimatedDeparture DateTime?
+  actualDeparture   DateTime?
+  estimatedArrival  DateTime?
+  actualArrival     DateTime?
+  
+  // Addresses
+  originPort        String?
+  destinationPort   String?
+  deliveryAddress   String
+  
+  // Costs (in kobo)
+  shippingCost      Int?
+  insuranceCost     Int?
+  dutiesEstimate    Int?
+  
+  // Status updates
+  currentLocation   String?
+  lastUpdateAt      DateTime?
+  
+  // Notes
+  specialInstructions String?
+  
+  // Arranged by
+  arrangedByOpsId   String?
+  arrangedAt        DateTime?
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  @@index([trackingNumber])
+}
+
+model FXSnapshot {
+  id                String   @id @default(cuid())
+  
+  fromCurrency      String   // e.g., "USD"
+  toCurrency        String   // e.g., "NGN"
+  rate              Float    // e.g., 1500.0 (1 USD = 1500 NGN)
+  
+  source            String?  // Rate source
+  
+  validFrom         DateTime
+  validUntil        DateTime?
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([fromCurrency, toCurrency])
+  @@index([validFrom])
+}
+
+model TradeSettings {
+  id                String   @id @default(cuid())
+  
+  // Global trade settings
+  internationalEnabled Boolean @default(false)
+  
+  // Default requirements
+  requireGreenTickSupplier Boolean @default(true)
+  defaultHighValueThreshold Int @default(50000000) // ₦500,000
+  
+  // Supported source countries (where suppliers are)
+  sourceCountries   String[] @default(["NG", "BD"])
+  
+  updatedAt         DateTime @updatedAt
+  updatedByAdminId  String?
+}

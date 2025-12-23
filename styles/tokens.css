@@ -1,0 +1,54 @@
+/* styles/tokens.css - BANADAMA DESIGN TOKENS (LOCKED - DARK MODE) */
+
+:root {
+    /* Surfaces */
+    --bd-bg: #0b0c10;
+    --bd-surface: #0f1117;
+    --bd-card: #121526;
+    --bd-border: rgba(255, 255, 255, 0.08);
+
+    /* Text */
+    --bd-text: rgba(255, 255, 255, 0.92);
+    --bd-fg: rgba(255, 255, 255, 0.92);
+    --bd-muted: rgba(255, 255, 255, 0.68);
+
+    /* Primary */
+    --bd-primary: #ffffff;
+    --bd-primaryText: #0b0c10;
+
+    /* Brand accents */
+    --bd-brand: 152 60% 40%;
+    --bd-brand-2: 210 90% 55%;
+
+    /* Status */
+    --bd-danger: #ef4444;
+    --bd-success: #22c55e;
+    --bd-warning: #f59e0b;
+
+    /* Radius */
+    --bd-r-sm: 10px;
+    --bd-r-md: 14px;
+    --bd-r-lg: 16px;
+    --bd-radius: 16px;
+    --bd-radius-sm: 10px;
+
+    /* Shadows */
+    --bd-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --bd-shadow2: 0 14px 50px rgba(0, 0, 0, 0.45);
+
+    /* Spacing */
+    --bd-gap: 12px;
+    --bd-gap-sm: 8px;
+    --bd-gap-lg: 24px;
+    --bd-pad: 14px;
+    --bd-pad-sm: 10px;
+    --bd-pad-lg: 20px;
+
+    /* Button/Input heights */
+    --bd-btn-height: 42px;
+    --bd-btn-height-sm: 34px;
+    --bd-input-height: 42px;
+
+    /* Grid */
+    --bd-content-max: 1280px;
+}

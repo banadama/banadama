@@ -1,0 +1,161 @@
+
+// ============================================
+// LOGISTICS MODE ENUMS
+// ============================================
+
+enum DeliveryType {
+  LOCAL_DELIVERY
+  INTERNATIONAL_DELIVERY
+}
+
+enum ShipmentStatus {
+  PENDING           // Shipment created, not yet picked up
+  PICKED_UP         // Carrier has picked up
+  IN_TRANSIT        // On the way
+  OUT_FOR_DELIVERY  // Final mile
+  DELIVERED         // Delivered to recipient
+  FAILED            // Delivery failed
+  RETURNED          // Returned to sender
+}
+
+enum ProofOfDeliveryType {
+  PHOTO             // Photo of delivered package
+  SIGNATURE         // Customer signature
+  DOCUMENT          // Signed receipt document
+  OTHER
+}
+
+// ============================================
+// LOGISTICS MODE MODELS
+// ============================================
+
+model Shipment {
+  id                String          @id @default(cuid())
+  
+  // Link to order
+  order             Order           @relation(fields: [orderId], references: [id])
+  orderId           String          @unique
+  
+  // Delivery type
+  type              DeliveryType    @default(LOCAL_DELIVERY)
+  
+  // Carrier details (Phase 1 = manual entry)
+  carrierName       String?
+  trackingNumber    String?
+  trackingUrl       String?
+  
+  // Status
+  status            ShipmentStatus  @default(PENDING)
+  
+  // Timeline
+  estimatedPickup   DateTime?
+  actualPickup      DateTime?
+  estimatedDelivery DateTime?
+  actualDelivery    DateTime?
+  
+  // Address
+  pickupAddress     String?
+  deliveryAddress   String
+  
+  // Costs
+  shippingCost      Int?            // In kobo
+  insuranceCost     Int?
+  
+  // Contact info
+  recipientName     String?
+  recipientPhone    String?
+  
+  // Notes
+  specialInstructions String?
+  internalNotes     String?
+  
+  // Delivery confirmation
+  deliveryConfirmed Boolean         @default(false)
+  confirmedByBuyer  Boolean         @default(false)
+  confirmedByOps    Boolean         @default(false)
+  confirmedAt       DateTime?
+  
+  // Created/managed by
+  createdByOpsId    String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  events            ShipmentEvent[]
+  proofOfDelivery   ProofOfDelivery[]
+  
+  @@index([orderId])
+  @@index([status])
+  @@index([trackingNumber])
+}
+
+model ShipmentEvent {
+  id                String          @id @default(cuid())
+  
+  shipment          Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  shipmentId        String
+  
+  // Event details
+  status            ShipmentStatus
+  location          String?
+  note              String?
+  
+  // Who created
+  createdByUserId   String?
+  createdByRole     String?         // "OPS", "SYSTEM", "CARRIER"
+  
+  timestamp         DateTime        @default(now())
+  
+  @@index([shipmentId])
+  @@index([timestamp])
+}
+
+model ProofOfDelivery {
+  id                String              @id @default(cuid())
+  
+  shipment          Shipment            @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  shipmentId        String
+  
+  type              ProofOfDeliveryType
+  fileUrl           String
+  fileName          String?
+  
+  // Metadata
+  description       String?
+  geoLocation       String?             // Lat,Lng if captured
+  capturedAt        DateTime?
+  
+  // Verification
+  verifiedByOpsId   String?
+  verifiedAt        DateTime?
+  isValid           Boolean             @default(false)
+  rejectionReason   String?
+  
+  uploadedByUserId  String
+  uploadedByRole    String              // "CARRIER", "OPS", "SUPPLIER"
+  uploadedAt        DateTime            @default(now())
+  
+  @@index([shipmentId])
+}
+
+model LogisticsSettings {
+  id                      String   @id @default(cuid())
+  
+  // Global enable/disable
+  logisticsEnabled        Boolean  @default(true)
+  
+  // Delivery requirements
+  requireProofOfDelivery  Boolean  @default(true)
+  requireBuyerConfirmation Boolean @default(false)  // If true, buyer must confirm
+  autoVerifyAfterDays     Int?     // Auto-verify if buyer doesn't respond (null = disabled)
+  
+  // Default carriers
+  defaultLocalCarrier     String?
+  defaultIntlCarrier      String?
+  
+  // Blocked carriers
+  blockedCarriers         String[] @default([])
+  
+  updatedAt               DateTime @updatedAt
+  updatedByAdminId        String?
+}

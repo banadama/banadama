@@ -1,0 +1,219 @@
+
+// ============================================
+// GROWTH MODE ENUMS
+// ============================================
+
+enum GrowthRole {
+  GROWTH_AGENT      // Field/on-ground agent
+  GROWTH_MANAGER    // Supervises agents
+}
+
+enum GrowthAgentStatus {
+  PENDING           // Awaiting approval
+  ACTIVE            // Can onboard suppliers
+  SUSPENDED         // Temporarily blocked
+  TERMINATED        // Permanently removed
+}
+
+enum GrowthEarningType {
+  SUPPLIER_ONBOARD      // Per active supplier
+  SUPPLIER_FIRST_ORDER  // When supplier gets first order
+  ORDER_COMMISSION      // Per completed order
+  BONUS                 // Manual bonus
+}
+
+enum GrowthEarningStatus {
+  PENDING         // Awaiting activity threshold
+  UNLOCKED        // Activity met, can be paid
+  PAID            // Paid out
+  REVERSED        // Reversed by admin
+}
+
+enum GrowthPayoutStatus {
+  PENDING         // Awaiting Finance
+  PENDING_FINANCE // Submitted for Finance approval
+  APPROVED        // Approved by Finance
+  PROCESSING      // Being processed
+  COMPLETED       // Paid
+  REJECTED        // Rejected
+}
+
+// ============================================
+// GROWTH MODE MODELS
+// ============================================
+
+model GrowthAgentProfile {
+  id                  String              @id @default(cuid())
+  
+  // Link to user
+  user                User                @relation(fields: [userId], references: [id])
+  userId              String              @unique
+  
+  // Role
+  role                GrowthRole          @default(GROWTH_AGENT)
+  status              GrowthAgentStatus   @default(PENDING)
+  
+  // Display info
+  displayName         String?
+  phone               String?
+  region              String?             // Geographic region assigned
+  territory           String?             // Specific area/market
+  
+  // Manager (if agent)
+  managerId           String?
+  
+  // Stats (denormalized for performance)
+  totalSuppliersOnboarded Int             @default(0)
+  activeSuppliersCount    Int             @default(0)
+  totalOrdersGenerated    Int             @default(0)
+  totalEarnings           Int             @default(0)   // In kobo
+  pendingEarnings         Int             @default(0)
+  paidEarnings            Int             @default(0)
+  
+  // Commission rate override (null = use default)
+  customCommissionRate    Float?
+  
+  // Approval/Status tracking
+  approvedAt          DateTime?
+  approvedByAdminId   String?
+  suspendedAt         DateTime?
+  suspendedByAdminId  String?
+  suspendReason       String?
+  
+  // Notes
+  internalNotes       String?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  // Relations
+  onboardedSuppliers  GrowthSupplier[]
+  earnings            GrowthEarning[]
+  payouts             GrowthPayout[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([managerId])
+  @@index([region])
+}
+
+model GrowthSupplier {
+  id                  String              @id @default(cuid())
+  
+  // The onboarded supplier
+  supplier            Supplier            @relation(fields: [supplierId], references: [id])
+  supplierId          String              @unique
+  
+  // Who onboarded them
+  agent               GrowthAgentProfile  @relation(fields: [agentId], references: [id])
+  agentId             String
+  
+  // Onboarding status
+  onboardedAt         DateTime            @default(now())
+  activatedAt         DateTime?           // When supplier made first product live
+  firstOrderAt        DateTime?           // When supplier got first order
+  firstCompletedOrderAt DateTime?         // When first order completed
+  
+  // Activity metrics (for commission unlock)
+  totalProducts       Int                 @default(0)
+  totalOrders         Int                 @default(0)
+  completedOrders     Int                 @default(0)
+  
+  // Verification status (from supplier)
+  verificationLevel   String?             // NONE, BLUE, GREEN
+  
+  // Notes
+  onboardingNotes     String?
+  
+  @@index([agentId])
+  @@index([supplierId])
+}
+
+model GrowthEarning {
+  id                  String              @id @default(cuid())
+  
+  agent               GrowthAgentProfile  @relation(fields: [agentId], references: [id])
+  agentId             String
+  
+  type                GrowthEarningType
+  amount              Int                 // In kobo
+  status              GrowthEarningStatus @default(PENDING)
+  
+  // Reference (what triggered this earning)
+  refType             String?             // "SUPPLIER" / "ORDER"
+  refId               String?             // supplier ID or order ID
+  
+  // Description
+  description         String?
+  
+  // Unlock conditions
+  unlockRequirement   String?             // e.g., "3_COMPLETED_ORDERS"
+  unlockProgress      Int?                // e.g., 2 out of 3
+  unlockTarget        Int?                // e.g., 3
+  unlockedAt          DateTime?
+  
+  // Reversal (if applicable)
+  reversedAt          DateTime?
+  reversedByAdminId   String?
+  reversalReason      String?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([agentId])
+  @@index([status])
+  @@index([type])
+}
+
+model GrowthPayout {
+  id                  String              @id @default(cuid())
+  
+  agent               GrowthAgentProfile  @relation(fields: [agentId], references: [id])
+  agentId             String
+  
+  amount              Int                 // In kobo
+  status              GrowthPayoutStatus  @default(PENDING)
+  
+  // Submission
+  submittedAt         DateTime            @default(now())
+  
+  // Finance review
+  reviewedByFinanceId String?
+  reviewedAt          DateTime?
+  approvalNotes       String?
+  rejectionReason     String?
+  
+  // Completion
+  completedAt         DateTime?
+  paymentReference    String?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([agentId])
+  @@index([status])
+}
+
+model GrowthSettings {
+  id                          String   @id @default(cuid())
+  
+  // Global enable/disable
+  growthModeEnabled           Boolean  @default(true)
+  
+  // Commission rates
+  supplierOnboardCommission   Int      @default(50000)   // ₦500 per active supplier
+  firstOrderCommission        Int      @default(100000)  // ₦1000 when supplier gets first order
+  orderCommissionRate         Float    @default(0.005)   // 0.5% per completed order
+  
+  // Unlock requirements
+  ordersRequiredToUnlock      Int      @default(1)       // Orders needed to unlock onboard commission
+  
+  // Payout settings
+  minimumPayout               Int      @default(500000)  // ₦5,000 minimum
+  
+  // Fraud controls
+  blockSelfOnboard            Boolean  @default(true)    // Agent can't onboard self
+  
+  updatedAt                   DateTime @updatedAt
+  updatedByAdminId            String?
+}

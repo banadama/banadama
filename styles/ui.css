@@ -1,0 +1,325 @@
+/* styles/ui.css - BANADAMA UI COMPONENTS (LOCKED - DARK MODE) */
+
+/* ============================================
+   BASE
+   ============================================ */
+
+html,
+body {
+    background: var(--bd-bg);
+    color: var(--bd-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+.bd-container {
+    max-width: var(--bd-content-max, 1280px);
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.bd-page {
+    padding: 18px 0 28px;
+}
+
+.bd-grid {
+    display: grid;
+    gap: var(--bd-gap);
+}
+
+.bd-row {
+    display: flex;
+    gap: var(--bd-gap);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.bd-card {
+    background: var(--bd-card);
+    border: 1px solid var(--bd-border);
+    border-radius: var(--bd-r-lg, 16px);
+    box-shadow: var(--bd-shadow);
+}
+
+.bd-card-pad {
+    padding: var(--bd-pad, 14px);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.bd-btn {
+    height: var(--bd-btn-height, 42px);
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--bd-border);
+    background: transparent;
+    color: var(--bd-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.bd-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.bd-btn:active {
+    transform: scale(0.98);
+}
+
+.bd-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bd-btn-sm {
+    height: var(--bd-btn-height-sm, 34px);
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.bd-btn-primary {
+    background: var(--bd-primary);
+    color: var(--bd-primaryText);
+    border-color: transparent;
+}
+
+.bd-btn-primary:hover {
+    opacity: 0.92;
+    background: var(--bd-primary);
+}
+
+.bd-btn-soft {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: transparent;
+}
+
+.bd-btn-danger {
+    background: var(--bd-danger);
+    color: white;
+    border-color: transparent;
+}
+
+.bd-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+}
+
+.bd-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+.bd-input {
+    height: var(--bd-input-height, 42px);
+    border-radius: 12px;
+    border: 1px solid var(--bd-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--bd-text);
+    padding: 0 12px;
+    outline: none;
+    font-size: 15px;
+    width: 100%;
+    transition: border-color 0.15s ease;
+}
+
+.bd-input:focus {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.bd-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+textarea.bd-input {
+    min-height: 100px;
+    padding: 12px;
+    resize: vertical;
+}
+
+select.bd-input {
+    cursor: pointer;
+    appearance: none;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.bd-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--bd-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--bd-muted);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bd-badge-success {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--bd-success);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.bd-badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--bd-warning);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.bd-badge-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--bd-danger);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.bd-h1 {
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.2;
+    color: var(--bd-text);
+}
+
+.bd-h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--bd-text);
+}
+
+.bd-h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--bd-text);
+}
+
+.bd-section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.bd-section-sub {
+    color: var(--bd-muted);
+    margin: 8px 0 0;
+}
+
+.bd-p {
+    margin: 0;
+    color: var(--bd-muted);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.bd-small {
+    font-size: 14px;
+    color: var(--bd-muted);
+}
+
+.bd-label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--bd-muted);
+}
+
+/* ============================================
+   UTILITY
+   ============================================ */
+
+.bd-divider {
+    height: 1px;
+    background: var(--bd-border);
+    margin: var(--bd-gap) 0;
+}
+
+/* ============================================
+   MARKETPLACE GRID (3/2/1 responsive)
+   ============================================ */
+
+.bd-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+@media (max-width: 1024px) {
+    .bd-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .bd-product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .bd-h1 {
+        font-size: 28px;
+    }
+
+    .bd-h2 {
+        font-size: 20px;
+    }
+
+    .bd-container {
+        padding: 0 12px;
+    }
+
+    .bd-page {
+        padding: 14px 0 20px;
+    }
+}
+
+/* ============================================
+   CART & CHECKOUT RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .bd-checkout-layout {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -1,0 +1,206 @@
+/* app/globals.css - BANADAMA GLOBAL STYLES (DARK MODE) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import design system */
+@import "../styles/tokens.css";
+@import "../styles/ui.css";
+@import "../styles/tables.css";
+
+/* Base reset */
+* {
+  box-sizing: border-box;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bd-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bd-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Toast slideIn animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Product detail layout */
+.bd-product-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* Sticky purchase panel desktop */
+.bd-sticky {
+  position: sticky;
+  top: 12px;
+}
+
+/* Mobile stack */
+@media (max-width: 1024px) {
+  .bd-product-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bd-sticky {
+    position: static;
+  }
+}
+
+/* Breadcrumbs */
+.bd-breadcrumbs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--bd-muted);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.bd-bc-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.bd-bc-link:hover {
+  text-decoration: underline;
+}
+
+.bd-bc-current {
+  color: var(--bd-text);
+  font-weight: 800;
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Market layout (cart/checkout with sidebar) */
+.bd-market-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .bd-market-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Glass morphism styles */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-container {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* SVG stroke animation */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Additional animation delays */
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}

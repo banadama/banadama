@@ -1,0 +1,182 @@
+
+// ============================================
+// FACTORIES MODE ENUMS
+// ============================================
+
+enum ProductionStatus {
+  NOT_STARTED      // Order confirmed, awaiting production
+  IN_PRODUCTION    // Manufacturing in progress
+  QUALITY_CHECK    // Quality inspection
+  READY_TO_SHIP    // Ready for pickup
+  SHIPPED          // Handed to carrier
+}
+
+enum FactoryVerificationStatus {
+  PENDING           // Awaiting verification
+  UNDER_REVIEW      // Docs being reviewed
+  VERIFIED          // Green tick granted
+  SUSPENDED         // Temporarily blocked
+  REJECTED          // Verification denied
+}
+
+// ============================================
+// FACTORY DATA MODELS
+// ============================================
+
+model FactoryProfile {
+  id                      String                    @id @default(cuid())
+  
+  // Link to supplier (COMPANY_FACTORY type)
+  supplier                Supplier                  @relation(fields: [supplierId], references: [id])
+  supplierId              String                    @unique
+  
+  // Factory-specific info
+  factoryName             String
+  factoryType             String?                   // e.g., "Garments", "Textiles", "Packaging"
+  yearEstablished         Int?
+  
+  // Location (primarily Bangladesh)
+  country                 String                    @default("BD")  // BD = Bangladesh
+  city                    String?
+  address                 String?
+  
+  // Production capabilities
+  monthlyCapacityUnits    Int?                      // Max monthly production
+  minOrderQuantity        Int?                      // Default MOQ
+  standardLeadTimeDays    Int?                      // Default lead time
+  
+  // Certifications & compliance
+  hasCertifications       Boolean                   @default(false)
+  certifications          String[]                  @default([])
+  
+  // Verification
+  verificationStatus      FactoryVerificationStatus @default(PENDING)
+  hasGreenTick            Boolean                   @default(false)
+  verifiedAt              DateTime?
+  verifiedByAdminId       String?
+  
+  // Trade restrictions
+  enabledForInternational Boolean                   @default(false)
+  enabledForBuyNow        Boolean                   @default(false)  // Samples only
+  
+  // Admin notes
+  adminNotes              String?
+  
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  
+  // Relations
+  capabilities            FactoryCapability[]
+  complianceDocs          FactoryComplianceDoc[]
+  productions             FactoryProduction[]
+  
+  @@index([supplierId])
+  @@index([country])
+  @@index([hasGreenTick])
+  @@index([verificationStatus])
+}
+
+model FactoryCapability {
+  id                  String          @id @default(cuid())
+  
+  factory             FactoryProfile  @relation(fields: [factoryId], references: [id])
+  factoryId           String
+  
+  // Capability details
+  categorySlug        String          // e.g., "t-shirts", "packaging-boxes"
+  categoryName        String
+  
+  // Production specs
+  minOrderQuantity    Int             // Category-specific MOQ
+  maxOrderQuantity    Int?
+  leadTimeDays        Int             // Days to produce
+  
+  // Pricing (indicative)
+  pricePerUnitMin     Int?            // In kobo, minimum price
+  pricePerUnitMax     Int?            // In kobo, maximum price
+  
+  // Notes
+  notes               String?
+  
+  isActive            Boolean         @default(true)
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  @@unique([factoryId, categorySlug])
+  @@index([factoryId])
+  @@index([categorySlug])
+}
+
+model FactoryComplianceDoc {
+  id                  String          @id @default(cuid())
+  
+  factory             FactoryProfile  @relation(fields: [factoryId], references: [id])
+  factoryId           String
+  
+  // Document details
+  docType             String          // e.g., "TRADE_LICENSE", "ISO_CERT", "FIRE_SAFETY"
+  docName             String
+  fileUrl             String
+  
+  // Verification
+  isVerified          Boolean         @default(false)
+  verifiedByAdminId   String?
+  verifiedAt          DateTime?
+  rejectionReason     String?
+  
+  expiryDate          DateTime?
+  
+  uploadedAt          DateTime        @default(now())
+  
+  @@index([factoryId])
+  @@index([docType])
+}
+
+model FactoryProduction {
+  id                  String           @id @default(cuid())
+  
+  // Link to order
+  order               Order            @relation(fields: [orderId], references: [id])
+  orderId             String           @unique
+  
+  // Link to factory
+  factory             FactoryProfile   @relation(fields: [factoryId], references: [id])
+  factoryId           String
+  
+  // Production status
+  status              ProductionStatus @default(NOT_STARTED)
+  
+  // Timeline
+  expectedStartDate   DateTime?
+  actualStartDate     DateTime?
+  expectedEndDate     DateTime?
+  actualEndDate       DateTime?
+  
+  // Quantity
+  orderedQuantity     Int
+  producedQuantity    Int              @default(0)
+  defectQuantity      Int              @default(0)
+  
+  // Updates (JSON array of status updates)
+  updates             Json?            // [{ status, note, timestamp, updatedBy }]
+  
+  // Photos (production progress)
+  progressPhotos      String[]         @default([])
+  
+  // Quality check
+  qcPassed            Boolean?
+  qcNotes             String?
+  qcDate              DateTime?
+  
+  // Handoff
+  readyForPickupAt    DateTime?
+  shippedAt           DateTime?
+  
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  
+  @@index([orderId])
+  @@index([factoryId])
+  @@index([status])
+}

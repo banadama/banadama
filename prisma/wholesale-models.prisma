@@ -1,0 +1,163 @@
+
+// ============================================
+// WHOLESALES MODE ENUMS
+// ============================================
+
+enum WholesalerVerificationStatus {
+  PENDING           // Awaiting verification
+  UNDER_REVIEW      // Docs being reviewed
+  VERIFIED          // Blue or Green tick granted
+  SUSPENDED         // Temporarily blocked
+  REJECTED          // Verification denied
+}
+
+enum StockStatus {
+  IN_STOCK          // Available for immediate purchase
+  LOW_STOCK         // Limited quantity
+  OUT_OF_STOCK      // Currently unavailable
+  COMING_SOON       // Expected to be available
+}
+
+enum DeliverySpeed {
+  SAME_DAY          // Same day delivery
+  NEXT_DAY          // 1 day
+  EXPRESS           // 2-3 days
+  STANDARD          // 5-7 days
+}
+
+// ============================================
+// WHOLESALES DATA MODELS
+// ============================================
+
+model WholesalerProfile {
+  id                      String                      @id @default(cuid())
+  
+  // Link to supplier (COMPANY_WHOLESALER or COMPANY_RETAIL)
+  supplier                Supplier                    @relation(fields: [supplierId], references: [id])
+  supplierId              String                      @unique
+  
+  // Wholesaler-specific info
+  businessName            String
+  businessType            String?                     // "WHOLESALER", "STRONG_RETAILER"
+  yearEstablished         Int?
+  
+  // Location (primarily Nigeria)
+  country                 String                      @default("NG")  // NG = Nigeria
+  city                    String?
+  marketName              String?                     // e.g., "Onitsha Main Market"
+  address                 String?
+  
+  // Capabilities
+  buyNowEnabled           Boolean                     @default(true)  // MANDATORY
+  rfqEnabled              Boolean                     @default(false)
+  defaultDeliverySpeed    DeliverySpeed               @default(STANDARD)
+  averageFulfillmentDays  Float?
+  
+  // Categories (what they sell)
+  categories              String[]                    @default([])
+  
+  // Verification
+  verificationStatus      WholesalerVerificationStatus @default(PENDING)
+  hasBlueTick             Boolean                     @default(false)  // Minimum
+  hasGreenTick            Boolean                     @default(false)  // Premium
+  verifiedAt              DateTime?
+  verifiedByAdminId       String?
+  
+  // Trade restrictions
+  enabledForInternational Boolean                     @default(false)
+  maxOrderValue           Int?                        // In kobo, optional cap
+  
+  // Performance metrics
+  fulfillmentRate         Float?                      // % of orders fulfilled
+  avgDeliveryDays         Float?                      // Average delivery time
+  totalOrdersCompleted    Int                         @default(0)
+  
+  // Admin notes
+  adminNotes              String?
+  
+  createdAt               DateTime                    @default(now())
+  updatedAt               DateTime                    @updatedAt
+  
+  // Relations
+  stockItems              WholesalerStock[]
+  
+  @@index([supplierId])
+  @@index([country])
+  @@index([hasBlueTick])
+  @@index([hasGreenTick])
+  @@index([verificationStatus])
+}
+
+model WholesalerStock {
+  id                  String          @id @default(cuid())
+  
+  wholesaler          WholesalerProfile @relation(fields: [wholesalerId], references: [id])
+  wholesalerId        String
+  
+  // Product reference
+  product             Product         @relation(fields: [productId], references: [id])
+  productId           String
+  
+  // Stock status
+  status              StockStatus     @default(IN_STOCK)
+  quantityAvailable   Int             @default(0)
+  minOrderQuantity    Int             @default(1)         // MOQ
+  maxOrderQuantity    Int?                                // Optional cap
+  
+  // Pricing
+  pricePerUnit        Int                                 // In kobo
+  bulkPriceThreshold  Int?                                // Qty for bulk discount
+  bulkPricePerUnit    Int?                                // Bulk price in kobo
+  
+  // Delivery
+  deliverySpeed       DeliverySpeed   @default(STANDARD)
+  estimatedDays       Int?
+  
+  // Stock update history
+  lastStockUpdate     DateTime?
+  stockConfirmedByOps Boolean         @default(false)
+  
+  isActive            Boolean         @default(true)
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  @@unique([wholesalerId, productId])
+  @@index([wholesalerId])
+  @@index([productId])
+  @@index([status])
+}
+
+model WholesalerPerformance {
+  id                  String          @id @default(cuid())
+  
+  wholesaler          WholesalerProfile @relation(fields: [wholesalerId], references: [id])
+  wholesalerId        String
+  
+  // Period
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  // Metrics
+  ordersReceived      Int             @default(0)
+  ordersFulfilled     Int             @default(0)
+  ordersRejected      Int             @default(0)
+  ordersCancelled     Int             @default(0)
+  
+  totalRevenue        Int             @default(0)        // In kobo
+  avgFulfillmentHours Float?
+  avgDeliveryDays     Float?
+  
+  // Stock reliability
+  stockOutCount       Int             @default(0)        // Times stock was unavailable
+  stockAccuracy       Float?                             // % accuracy of declared stock
+  
+  // Issues
+  disputeCount        Int             @default(0)
+  refundCount         Int             @default(0)
+  
+  createdAt           DateTime        @default(now())
+  
+  @@index([wholesalerId])
+  @@index([periodStart])
+}

@@ -1,0 +1,221 @@
+
+// ============================================
+// FINANCE MODE MODELS
+// ============================================
+
+model AccountWallet {
+  id             String       @id @default(cuid())
+  
+  account        Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId      String       @unique
+  
+  // Balances (stored in kobo/smallest unit)
+  availableBalance  Int       @default(0)
+  lockedBalance     Int       @default(0)  // In escrow
+  pendingBalance    Int       @default(0)  // Pending payouts
+  
+  // Wallet status
+  status         WalletStatus @default(ACTIVE)
+  frozenAt       DateTime?
+  frozenReason   String?
+  frozenByAdminId String?
+  
+  // Audit
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  // Relations
+  ledgerEntries  LedgerEntry[]
+  
+  @@index([accountId])
+  @@index([status])
+}
+
+model PlatformWallet {
+  id             String       @id @default(cuid())
+  
+  walletType     String       @unique  // "MAIN", "FEES", "ESCROW_POOL"
+  
+  balance        Int          @default(0)
+  
+  description    String?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model LedgerEntry {
+  id             String           @id @default(cuid())
+  
+  wallet         AccountWallet    @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId       String
+  
+  type           LedgerEntryType
+  
+  // Amounts (positive for credit, negative for debit)
+  amount         Int
+  balanceBefore  Int
+  balanceAfter   Int
+  
+  // Reference
+  referenceType  String?          // "ORDER", "ESCROW", "PAYOUT", "REFUND"
+  referenceId    String?
+  
+  description    String?
+  metadata       Json?
+  
+  // Audit
+  createdByAdminId String?
+  createdByReason  String?        // Required for adjustments
+  
+  createdAt      DateTime         @default(now())
+  
+  @@index([walletId])
+  @@index([type])
+  @@index([referenceType, referenceId])
+  @@index([createdAt])
+}
+
+model Escrow {
+  id             String         @id @default(cuid())
+  
+  order          Order          @relation(fields: [orderId], references: [id])
+  orderId        String         @unique
+  
+  buyerAccountId   String
+  supplierAccountId String
+  
+  // Amounts (stored in kobo)
+  totalAmount      Int           // Total locked
+  releasedAmount   Int           @default(0)
+  refundedAmount   Int           @default(0)
+  platformFeeAmount Int          @default(0)
+  
+  status         EscrowStatus   @default(PENDING)
+  
+  // Delivery confirmation
+  deliveryConfirmedAt    DateTime?
+  deliveryConfirmedBy    String?       // "BUYER", "OPS"
+  deliveryProofUrl       String?
+  
+  // Finance actions
+  lockedAt       DateTime?
+  releasedAt     DateTime?
+  refundedAt     DateTime?
+  
+  // Admin tracking
+  releaseApprovedByAdminId String?
+  releaseApprovedAt        DateTime?
+  releaseNotes             String?
+  
+  holdReason     String?
+  holdByAdminId  String?
+  holdAt         DateTime?
+  
+  // Audit
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  
+  // Relations
+  payouts        FinancePayout[]
+  refunds        FinanceRefund[]
+  
+  @@index([orderId])
+  @@index([buyerAccountId])
+  @@index([supplierAccountId])
+  @@index([status])
+}
+
+model FinancePayout {
+  id              String               @id @default(cuid())
+  
+  escrow          Escrow               @relation(fields: [escrowId], references: [id])
+  escrowId        String
+  
+  order           Order                @relation(fields: [orderId], references: [id])
+  orderId         String
+  
+  supplierAccountId String
+  
+  // Amounts
+  grossAmount     Int                  // Before fees
+  platformFee     Int                  // Fee deducted
+  netAmount       Int                  // Actual payout
+  
+  status          PayoutApprovalStatus @default(PENDING_VERIFICATION)
+  
+  // Ops recommendation
+  opsRecommendation    String?         // "RELEASE", "HOLD", "PARTIAL"
+  opsRecommendedByUserId String?
+  opsRecommendedAt     DateTime?
+  opsNotes             String?
+  
+  // Finance decision (FINANCE_ADMIN only)
+  approvedByAdminId    String?
+  approvedAt           DateTime?
+  approvalNotes        String?
+  
+  rejectedByAdminId    String?
+  rejectedAt           DateTime?
+  rejectionReason      String?
+  
+  // Payout execution
+  processedAt          DateTime?
+  paymentReference     String?
+  paymentMethod        String?
+  
+  // Audit
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  
+  @@index([escrowId])
+  @@index([orderId])
+  @@index([supplierAccountId])
+  @@index([status])
+}
+
+model FinanceRefund {
+  id              String         @id @default(cuid())
+  
+  escrow          Escrow         @relation(fields: [escrowId], references: [id])
+  escrowId        String
+  
+  order           Order          @relation(fields: [orderId], references: [id])
+  orderId         String
+  
+  buyerAccountId  String
+  
+  // Amounts
+  requestedAmount Int
+  approvedAmount  Int?
+  
+  status          RefundStatus   @default(REQUESTED)
+  
+  reason          String
+  category        String?        // "NON_DELIVERY", "QUALITY", etc.
+  
+  // Dispute link
+  disputeId       String?
+  
+  // Finance decision
+  approvedByAdminId    String?
+  approvedAt           DateTime?
+  approvalNotes        String?
+  
+  rejectedByAdminId    String?
+  rejectedAt           DateTime?
+  rejectionReason      String?
+  
+  // Execution
+  processedAt          DateTime?
+  refundReference      String?
+  
+  // Audit
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  @@index([escrowId])
+  @@index([orderId])
+  @@index([buyerAccountId])
+  @@index([status])
+}

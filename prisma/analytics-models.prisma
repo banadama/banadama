@@ -1,0 +1,255 @@
+
+// ============================================
+// ANALYTICS & AI MODE ENUMS
+// ============================================
+
+enum SnapshotPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum InsightStatus {
+  ACTIVE        // Currently relevant
+  ACKNOWLEDGED  // Admin has seen it
+  DISMISSED     // Admin chose to ignore
+  ACTED_UPON    // Admin took action
+  EXPIRED       // No longer relevant
+}
+
+enum InsightPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AIAgentType {
+  MARKET_AI
+  SUPPLIER_AI
+  BUYER_AI
+  OPS_AI
+  PRICING_AI
+  FINANCE_AI
+}
+
+// ============================================
+// ANALYTICS DATA MODELS
+// ============================================
+
+model AnalyticsSnapshot {
+  id              String          @id @default(cuid())
+  
+  period          SnapshotPeriod
+  periodStart     DateTime
+  periodEnd       DateTime
+  
+  // Market metrics
+  totalRfqs       Int             @default(0)
+  totalOrders     Int             @default(0)
+  totalGmv        Int             @default(0)   // Gross Merchandise Value in kobo
+  totalPlatformRevenue Int        @default(0)
+  
+  // Category breakdown (JSON)
+  categoryMetrics Json?           // { "textiles": { rfqs: 10, orders: 5, gmv: 100000 } }
+  
+  // Country breakdown
+  nigeriaGmv      Int             @default(0)
+  bangladeshGmv   Int             @default(0)
+  internationalGmv Int            @default(0)
+  
+  // Order breakdown
+  buyNowOrders    Int             @default(0)
+  rfqOrders       Int             @default(0)
+  
+  // User metrics
+  newSuppliers    Int             @default(0)
+  newBuyers       Int             @default(0)
+  activeSuppliers Int             @default(0)
+  activeBuyers    Int             @default(0)
+  
+  // Conversion
+  rfqToOrderRate  Float?
+  avgOrderValue   Int?
+  
+  createdAt       DateTime        @default(now())
+  
+  @@unique([period, periodStart])
+  @@index([period])
+  @@index([periodStart])
+}
+
+model SupplierScore {
+  id                  String    @id @default(cuid())
+  
+  supplierId          String    @unique
+  
+  // Performance scores (0-100)
+  overallScore        Int       @default(50)
+  responseTimeScore   Int       @default(50)   // How fast they respond to RFQs
+  fulfillmentScore    Int       @default(50)   // Order completion rate
+  qualityScore        Int       @default(50)   // Based on reviews/disputes
+  reliabilityScore    Int       @default(50)   // On-time delivery
+  
+  // Raw metrics
+  avgResponseTimeHours Float?
+  totalOrders         Int       @default(0)
+  completedOrders     Int       @default(0)
+  cancelledOrders     Int       @default(0)
+  disputeRate         Float?
+  totalRevenue        Int       @default(0)
+  
+  // Flags
+  isHighRisk          Boolean   @default(false)
+  isTopPerformer      Boolean   @default(false)
+  riskReasons         String[]  @default([])
+  
+  lastCalculatedAt    DateTime  @default(now())
+  
+  @@index([overallScore])
+  @@index([isHighRisk])
+  @@index([isTopPerformer])
+}
+
+model BuyerScore {
+  id                  String    @id @default(cuid())
+  
+  buyerId             String    @unique
+  
+  // Behavior scores (0-100)
+  overallScore        Int       @default(50)
+  engagementScore     Int       @default(50)
+  conversionScore     Int       @default(50)
+  valueScore          Int       @default(50)
+  
+  // Raw metrics
+  totalRfqs           Int       @default(0)
+  convertedRfqs       Int       @default(0)
+  abandonedRfqs       Int       @default(0)
+  totalOrders         Int       @default(0)
+  totalSpent          Int       @default(0)
+  avgOrderValue       Int?
+  
+  // Flags
+  isHighValue         Boolean   @default(false)
+  isAtRisk            Boolean   @default(false)  // Might churn
+  
+  lastCalculatedAt    DateTime  @default(now())
+  
+  @@index([overallScore])
+  @@index([isHighValue])
+}
+
+model OpsMetric {
+  id                  String          @id @default(cuid())
+  
+  period              SnapshotPeriod
+  periodStart         DateTime
+  
+  // RFQ metrics
+  avgRfqResponseTimeHours Float?
+  rfqsAssigned        Int             @default(0)
+  rfqsCompleted       Int             @default(0)
+  
+  // Order metrics
+  avgOrderProcessingHours Float?
+  ordersProcessed     Int             @default(0)
+  ordersDelayed       Int             @default(0)
+  
+  // Delivery
+  avgDeliveryTimeHours Float?
+  deliveriesOnTime    Int             @default(0)
+  deliveriesLate      Int             @default(0)
+  
+  // Chat
+  avgChatResponseTimeMinutes Float?
+  totalChatsHandled   Int             @default(0)
+  
+  // Per-ops user breakdown (JSON)
+  opsUserMetrics      Json?
+  
+  createdAt           DateTime        @default(now())
+  
+  @@unique([period, periodStart])
+  @@index([period])
+}
+
+model FinanceMetric {
+  id                  String          @id @default(cuid())
+  
+  period              SnapshotPeriod
+  periodStart         DateTime
+  
+  // Escrow
+  escrowLocked        Int             @default(0)
+  escrowReleased      Int             @default(0)
+  escrowBalance       Int             @default(0)
+  
+  // Revenue
+  platformFees        Int             @default(0)
+  affiliatePayouts    Int             @default(0)
+  growthPayouts       Int             @default(0)
+  supplierPayouts     Int             @default(0)
+  
+  // Disputes
+  refundsIssued       Int             @default(0)
+  refundCount         Int             @default(0)
+  disputesOpened      Int             @default(0)
+  disputesResolved    Int             @default(0)
+  
+  // By category/country (JSON)
+  revenueByCategory   Json?
+  revenueByCountry    Json?
+  
+  createdAt           DateTime        @default(now())
+  
+  @@unique([period, periodStart])
+  @@index([period])
+}
+
+// ============================================
+// AI INSIGHTS MODEL
+// ============================================
+
+model AIInsight {
+  id                  String          @id @default(cuid())
+  
+  // What generated this
+  agentType           AIAgentType
+  
+  // Insight details
+  title               String
+  description         String
+  priority            InsightPriority @default(MEDIUM)
+  status              InsightStatus   @default(ACTIVE)
+  
+  // Target (optional)
+  targetType          String?         // "SUPPLIER", "BUYER", "CATEGORY", "OPS"
+  targetId            String?
+  
+  // Suggested action
+  suggestedAction     String?
+  actionData          Json?           // Data needed if action is taken
+  
+  // Who can see this
+  visibleToRoles      String[]        @default(["ADMIN"])
+  
+  // Tracking
+  acknowledgedByUserId String?
+  acknowledgedAt      DateTime?
+  dismissedByUserId   String?
+  dismissedAt         DateTime?
+  actedUponByUserId   String?
+  actedUponAt         DateTime?
+  
+  // Context data
+  contextData         Json?           // Supporting data/charts
+  
+  expiresAt           DateTime?
+  createdAt           DateTime        @default(now())
+  
+  @@index([agentType])
+  @@index([status])
+  @@index([priority])
+  @@index([visibleToRoles])
+}

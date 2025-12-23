@@ -1,0 +1,278 @@
+
+// ============================================
+// CREATORS MODE ENUMS
+// ============================================
+
+enum CreatorType {
+  CREATOR_MODEL             // Modelling
+  CREATOR_PHOTOGRAPHER      // Photography
+  CREATOR_VIDEOGRAPHER      // Videography
+  CREATOR_GRAPHIC_DESIGNER  // Graphic Design
+  CREATOR_MOCK_DESIGNER     // Mockups & Templates
+}
+
+enum JobStatus {
+  PENDING           // Waiting for Ops assignment
+  ASSIGNED          // Creator assigned
+  IN_PROGRESS       // Work in progress
+  DELIVERED         // Creator delivered
+  REVISION          // Company requested revision
+  COMPLETED         // Company confirmed
+  CANCELLED         // Job cancelled
+  DISPUTED          // Under dispute
+}
+
+enum ProductStatus {
+  DRAFT             // Not published
+  PENDING_REVIEW    // Awaiting admin approval
+  APPROVED          // Live on marketplace
+  REJECTED          // Admin rejected
+  PAUSED            // Temporarily hidden
+}
+
+enum DeliveryType {
+  LOCAL_JOB         // In-person work (same country)
+  DIGITAL_PRODUCT   // Instant file delivery (global)
+}
+
+// ============================================
+// CREATORS DATA MODELS
+// ============================================
+
+model CreatorProfile {
+  id                      String                    @id @default(cuid())
+  
+  // Link to user
+  user                    User                      @relation(fields: [userId], references: [id])
+  userId                  String                    @unique
+  
+  // Creator info
+  displayName             String
+  bio                     String?
+  creatorTypes            CreatorType[]             // Can have multiple
+  
+  // Location (for local jobs)
+  country                 String                    @default("NG")  // NG or BD
+  city                    String?
+  
+  // Portfolio
+  portfolioUrls           String[]                  @default([])
+  sampleWorkUrls          String[]                  @default([])
+  
+  // Verification
+  hasBlueTick             Boolean                   @default(false)  // Verified identity
+  hasGreenTick            Boolean                   @default(false)  // Proven creator
+  verifiedAt              DateTime?
+  verifiedByAdminId       String?
+  
+  // Availability (for local jobs)
+  isAvailableForJobs      Boolean                   @default(true)
+  
+  // Stats
+  totalJobsCompleted      Int                       @default(0)
+  totalProductsSold       Int                       @default(0)
+  totalEarnings           Int                       @default(0)     // In kobo
+  avgRating               Float?
+  
+  // Status
+  isActive                Boolean                   @default(true)
+  isSuspended             Boolean                   @default(false)
+  adminNotes              String?
+  
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  
+  // Relations
+  jobs                    CreatorJob[]
+  products                CreatorProduct[]
+  deliveries              CreatorDelivery[]
+  earnings                CreatorEarning[]
+  
+  @@index([userId])
+  @@index([country])
+  @@index([creatorTypes])
+  @@index([hasBlueTick])
+  @@index([hasGreenTick])
+}
+
+model CreatorJob {
+  id                      String          @id @default(cuid())
+  
+  // Who is requesting
+  companyId               String          // Supplier ID (factory/wholesaler)
+  companyName             String
+  companyCountry          String
+  
+  // Job details
+  jobType                 CreatorType
+  title                   String
+  description             String
+  requirements            String?
+  deliverables            String[]        @default([])
+  
+  // Budget (set by company, approved by Ops)
+  budgetAmount            Int             // In kobo
+  platformFee             Int             @default(0)
+  creatorPayout           Int             @default(0)
+  
+  // Deadline
+  deadline                DateTime?
+  
+  // Assignment (by Ops only)
+  creator                 CreatorProfile? @relation(fields: [creatorId], references: [id])
+  creatorId               String?
+  assignedByOpsId         String?
+  assignedAt              DateTime?
+  
+  // Status
+  status                  JobStatus       @default(PENDING)
+  
+  // Chat (Ops-mediated)
+  chatThreadId            String?
+  
+  // Completion
+  completedAt             DateTime?
+  confirmedByCompanyId    String?
+  
+  // Rating
+  companyRating           Int?            // 1-5
+  companyFeedback         String?
+  
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  
+  // Relations
+  deliveries              CreatorDelivery[]
+  
+  @@index([companyId])
+  @@index([creatorId])
+  @@index([status])
+  @@index([companyCountry])
+}
+
+model CreatorDelivery {
+  id                  String          @id @default(cuid())
+  
+  // Links
+  job                 CreatorJob      @relation(fields: [jobId], references: [id])
+  jobId               String
+  creator             CreatorProfile  @relation(fields: [creatorId], references: [id])
+  creatorId           String
+  
+  // Delivery details
+  deliveryNote        String?
+  fileUrls            String[]        @default([])
+  
+  // Verification
+  isAcceptedByCompany Boolean         @default(false)
+  isVerifiedByOps     Boolean         @default(false)
+  verifiedByOpsId     String?
+  
+  // Revision
+  revisionRequested   Boolean         @default(false)
+  revisionNote        String?
+  
+  deliveredAt         DateTime        @default(now())
+  
+  @@index([jobId])
+  @@index([creatorId])
+}
+
+model CreatorProduct {
+  id                  String          @id @default(cuid())
+  
+  // Owner
+  creator             CreatorProfile  @relation(fields: [creatorId], references: [id])
+  creatorId           String
+  
+  // Product info
+  name                String
+  description         String
+  category            String          // "mockup", "template", "graphic"
+  tags                String[]        @default([])
+  
+  // Files
+  previewUrls         String[]        @default([])
+  fileUrls            String[]        @default([])     // Actual deliverable files
+  
+  // Pricing
+  price               Int             // In kobo
+  platformFee         Int             @default(0)      // Calculated on sale
+  
+  // Status
+  status              ProductStatus   @default(DRAFT)
+  approvedByAdminId   String?
+  approvedAt          DateTime?
+  rejectionReason     String?
+  
+  // Stats
+  totalSales          Int             @default(0)
+  totalRevenue        Int             @default(0)      // In kobo
+  
+  isActive            Boolean         @default(true)
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  // Relations
+  purchases           CreatorProductPurchase[]
+  
+  @@index([creatorId])
+  @@index([status])
+  @@index([category])
+}
+
+model CreatorProductPurchase {
+  id                  String          @id @default(cuid())
+  
+  // Links
+  product             CreatorProduct  @relation(fields: [productId], references: [id])
+  productId           String
+  buyerId             String          // User ID
+  
+  // Transaction
+  amount              Int             // Amount paid in kobo
+  platformFee         Int             // Platform fee in kobo
+  creatorEarning      Int             // Net to creator
+  
+  // Access
+  accessGrantedAt     DateTime        @default(now())
+  downloadCount       Int             @default(0)
+  
+  createdAt           DateTime        @default(now())
+  
+  @@index([productId])
+  @@index([buyerId])
+}
+
+model CreatorEarning {
+  id                  String          @id @default(cuid())
+  
+  creator             CreatorProfile  @relation(fields: [creatorId], references: [id])
+  creatorId           String
+  
+  // Source
+  sourceType          DeliveryType    // LOCAL_JOB or DIGITAL_PRODUCT
+  sourceId            String          // Job ID or Product Purchase ID
+  description         String
+  
+  // Amount
+  grossAmount         Int             // Before fees
+  platformFee         Int
+  netAmount           Int             // To creator wallet
+  
+  // Status
+  isPaid              Boolean         @default(false)
+  paidAt              DateTime?
+  paidByFinanceId     String?
+  
+  // Escrow
+  isInEscrow          Boolean         @default(true)
+  escrowReleasedAt    DateTime?
+  
+  createdAt           DateTime        @default(now())
+  
+  @@index([creatorId])
+  @@index([sourceType])
+  @@index([isPaid])
+}

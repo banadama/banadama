@@ -1,0 +1,751 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./styles/tokens.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* styles/tokens.css - BANADAMA DESIGN TOKENS (LOCKED - DARK MODE) */
+
+:root {
+    /* Surfaces */
+    --bd-bg: #0b0c10;
+    --bd-surface: #0f1117;
+    --bd-card: #121526;
+    --bd-border: rgba(255, 255, 255, 0.08);
+
+    /* Text */
+    --bd-text: rgba(255, 255, 255, 0.92);
+    --bd-fg: rgba(255, 255, 255, 0.92);
+    --bd-muted: rgba(255, 255, 255, 0.68);
+
+    /* Primary */
+    --bd-primary: #ffffff;
+    --bd-primaryText: #0b0c10;
+
+    /* Brand accents */
+    --bd-brand: 152 60% 40%;
+    --bd-brand-2: 210 90% 55%;
+
+    /* Status */
+    --bd-danger: #ef4444;
+    --bd-success: #22c55e;
+    --bd-warning: #f59e0b;
+
+    /* Radius */
+    --bd-r-sm: 10px;
+    --bd-r-md: 14px;
+    --bd-r-lg: 16px;
+    --bd-radius: 16px;
+    --bd-radius-sm: 10px;
+
+    /* Shadows */
+    --bd-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --bd-shadow2: 0 14px 50px rgba(0, 0, 0, 0.45);
+
+    /* Spacing */
+    --bd-gap: 12px;
+    --bd-gap-sm: 8px;
+    --bd-gap-lg: 24px;
+    --bd-pad: 14px;
+    --bd-pad-sm: 10px;
+    --bd-pad-lg: 20px;
+
+    /* Button/Input heights */
+    --bd-btn-height: 42px;
+    --bd-btn-height-sm: 34px;
+    --bd-input-height: 42px;
+
+    /* Grid */
+    --bd-content-max: 1280px;
+}
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./styles/ui.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* styles/ui.css - BANADAMA UI COMPONENTS (LOCKED - DARK MODE) */
+
+/* ============================================
+   BASE
+   ============================================ */
+
+html,
+body {
+    background: var(--bd-bg);
+    color: var(--bd-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+.bd-container {
+    max-width: var(--bd-content-max, 1280px);
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.bd-page {
+    padding: 18px 0 28px;
+}
+
+.bd-grid {
+    display: grid;
+    grid-gap: var(--bd-gap);
+    gap: var(--bd-gap);
+}
+
+.bd-row {
+    display: flex;
+    gap: var(--bd-gap);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.bd-card {
+    background: var(--bd-card);
+    border: 1px solid var(--bd-border);
+    border-radius: var(--bd-r-lg, 16px);
+    box-shadow: var(--bd-shadow);
+}
+
+.bd-card-pad {
+    padding: var(--bd-pad, 14px);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.bd-btn {
+    height: var(--bd-btn-height, 42px);
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--bd-border);
+    background: transparent;
+    color: var(--bd-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.bd-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.bd-btn:active {
+    transform: scale(0.98);
+}
+
+.bd-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bd-btn-sm {
+    height: var(--bd-btn-height-sm, 34px);
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.bd-btn-primary {
+    background: var(--bd-primary);
+    color: var(--bd-primaryText);
+    border-color: transparent;
+}
+
+.bd-btn-primary:hover {
+    opacity: 0.92;
+    background: var(--bd-primary);
+}
+
+.bd-btn-soft {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: transparent;
+}
+
+.bd-btn-danger {
+    background: var(--bd-danger);
+    color: white;
+    border-color: transparent;
+}
+
+.bd-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+}
+
+.bd-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+.bd-input {
+    height: var(--bd-input-height, 42px);
+    border-radius: 12px;
+    border: 1px solid var(--bd-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--bd-text);
+    padding: 0 12px;
+    outline: none;
+    font-size: 15px;
+    width: 100%;
+    transition: border-color 0.15s ease;
+}
+
+.bd-input:focus {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.bd-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+textarea.bd-input {
+    min-height: 100px;
+    padding: 12px;
+    resize: vertical;
+}
+
+select.bd-input {
+    cursor: pointer;
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.bd-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--bd-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--bd-muted);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bd-badge-success {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--bd-success);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.bd-badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--bd-warning);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.bd-badge-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--bd-danger);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.bd-h1 {
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.2;
+    color: var(--bd-text);
+}
+
+.bd-h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--bd-text);
+}
+
+.bd-h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--bd-text);
+}
+
+.bd-section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.bd-section-sub {
+    color: var(--bd-muted);
+    margin: 8px 0 0;
+}
+
+.bd-p {
+    margin: 0;
+    color: var(--bd-muted);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.bd-small {
+    font-size: 14px;
+    color: var(--bd-muted);
+}
+
+.bd-label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--bd-muted);
+}
+
+/* ============================================
+   UTILITY
+   ============================================ */
+
+.bd-divider {
+    height: 1px;
+    background: var(--bd-border);
+    margin: var(--bd-gap) 0;
+}
+
+/* ============================================
+   MARKETPLACE GRID (3/2/1 responsive)
+   ============================================ */
+
+.bd-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-gap: 14px;
+    gap: 14px;
+}
+
+@media (max-width: 1024px) {
+    .bd-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .bd-product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .bd-h1 {
+        font-size: 28px;
+    }
+
+    .bd-h2 {
+        font-size: 20px;
+    }
+
+    .bd-container {
+        padding: 0 12px;
+    }
+
+    .bd-page {
+        padding: 14px 0 20px;
+    }
+}
+
+/* ============================================
+   CART & CHECKOUT RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .bd-checkout-layout {
+        grid-template-columns: 1fr !important;
+    }
+}
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./styles/tables.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* styles/tables.css - BANADAMA TABLE STYLES (LOCKED) */
+
+/* Base Table */
+.bd-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bd-table th,
+.bd-table td {
+    border-bottom: 1px solid hsl(var(--bd-border));
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.bd-table th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Row hover */
+.bd-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.bd-table tbody tr:hover td {
+    background: hsl(var(--bd-muted) / 0.5);
+}
+
+/* Sortable header */
+.bd-table th.sortable {
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none;
+}
+
+.bd-table th.sortable:hover {
+    opacity: 1;
+}
+
+.bd-table th.sorted {
+    opacity: 1;
+    color: hsl(var(--bd-brand-2));
+}
+
+/* Sticky header (optional) */
+.bd-table-sticky thead {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background: hsl(var(--bd-card, var(--bd-bg)));
+    z-index: 10;
+}
+
+/* Responsive table wrapper */
+.bd-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Empty state */
+.bd-table-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: hsl(var(--bd-fg) / 0.5);
+}
+
+.bd-table-empty svg {
+    opacity: 0.3;
+    margin-bottom: 16px;
+}
+
+/* Loading state */
+.bd-table-loading {
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.bd-table-loading .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid hsl(var(--bd-border));
+    border-top-color: hsl(var(--bd-brand-2));
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Compact variant */
+.bd-table-compact th,
+.bd-table-compact td {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* Striped variant */
+.bd-table-striped tbody tr:nth-child(even) td {
+    background: hsl(var(--bd-muted) / 0.3);
+}
+
+/* Cell variants */
+.bd-table td.money {
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.bd-table td.money-positive {
+    color: hsl(var(--bd-success));
+}
+
+.bd-table td.money-negative {
+    color: hsl(var(--bd-danger));
+}
+
+.bd-table td.actions {
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* Checkbox column */
+.bd-table td.checkbox,
+.bd-table th.checkbox {
+    width: 40px;
+    text-align: center;
+}
+
+/* Status badge in table */
+.bd-table .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/.pnpm/next@14.0.0_@babel+core@7.2_d581c8e324c8c8e93d52c4758017b76b/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./app/globals.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* app/globals.css - BANADAMA GLOBAL STYLES (DARK MODE) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import design system */
+
+/* Base reset */
+* {
+  box-sizing: border-box;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bd-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bd-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Toast slideIn animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Product detail layout */
+.bd-product-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-gap: 14px;
+  gap: 14px;
+  align-items: start;
+}
+
+/* Sticky purchase panel desktop */
+.bd-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 12px;
+}
+
+/* Mobile stack */
+@media (max-width: 1024px) {
+  .bd-product-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bd-sticky {
+    position: static;
+  }
+}
+
+/* Breadcrumbs */
+.bd-breadcrumbs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--bd-muted);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.bd-bc-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.bd-bc-link:hover {
+  text-decoration: underline;
+}
+
+.bd-bc-current {
+  color: var(--bd-text);
+  font-weight: 800;
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Market layout (cart/checkout with sidebar) */
+.bd-market-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  grid-gap: 20px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .bd-market-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Glass morphism styles */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-container {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* SVG stroke animation */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Additional animation delays */
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}
