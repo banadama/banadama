@@ -5,10 +5,18 @@ node_modules/
 .next/
 out/
 
+# turbo
+.turbo/
+
 # env files
 .env
 .env.local
-.env.*.local
+.env.production
+.env.development
+.env.test
+.env.example.local
+.env.*
+!.env.example
 
 # logs
 npm-debug.log*
@@ -16,6 +24,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
+
+# build/dist
+dist/
+build/
+coverage/
 
 # misc
 .DS_Store
