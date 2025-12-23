@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio"
