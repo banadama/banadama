@@ -4,9 +4,10 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "build:skip-types": "SKIP_TYPE_CHECK=true next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "next lint",
     "test": "jest",
     "db:push": "prisma db push",
