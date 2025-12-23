@@ -1,5 +1,6 @@
 // app/layout.tsx - Root Layout with ToastProvider
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ToastProvider } from "@/components/ui/toast/ToastProvider";
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: any) {
         <ToastProvider>
           {children}
         </ToastProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
