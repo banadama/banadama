@@ -10,8 +10,8 @@ const SUBDOMAIN_ROUTES: Record<string, string> = {
     admin: "/admin",
     ops: "/ops",
     supplier: "/supplier",
-    bd: "/growth", // Business Development maps to growth
-    ng: "/ng",
+    bd: "/bd", // Bangladesh-specific portal
+    ng: "/ng", // Nigeria-specific portal
 };
 
 // ============================================
