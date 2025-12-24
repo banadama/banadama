@@ -1,6 +1,7 @@
+export const dynamic = 'force-dynamic';
 // app/(affiliate)/layout.tsx - Affiliate Layout
-import { DashboardShell } from "../../components/layout/DashboardShell";
-import { affiliateNav } from "../../components/layout/nav.config";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { affiliateNav } from "@/components/layout/nav.config";
 import { requireRole } from "@/lib/auth";
 
 export default async function AffiliateLayout({ children }: { children: React.ReactNode }) {

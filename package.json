@@ -2,6 +2,7 @@
   "name": "banadama-platform",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
   "prisma": {
     "schema": "prisma/schema.prisma"
   },
@@ -46,5 +47,31 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "description": "**Version:** 1.0.0 MVP  \r **Spec Source:** Overview.docx  \r **Stack:** Next.js 14 (App Router) + PostgreSQL + Prisma",
+  "main": "jest.config.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/banadama/banadama.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/banadama/banadama/issues"
+  },
+  "homepage": "https://github.com/banadama/banadama#readme",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "bcryptjs"
+    ]
   }
 }

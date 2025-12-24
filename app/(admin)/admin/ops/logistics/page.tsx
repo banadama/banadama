@@ -1,8 +1,8 @@
 // app/(ops)/ops/logistics/page.tsx - Ops Logistics
-import { DataTable } from "../../../../components/ui/DataTable";
-import { StatusBadge } from "../../../../components/ui/StatusBadge";
-import { Button } from "../../../../components/ui/Button";
-import { Card, CardBody } from "../../../../components/ui/Card";
+import { DataTable } from "@/components/ui/DataTable";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardBody } from "@/components/ui/Card";
 import Link from "next/link";
 
 export default async function OpsLogistics() {

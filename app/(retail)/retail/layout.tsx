@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // app/(retail)/retail/layout.tsx - Retail Layout
 import { requireRole } from "@/lib/auth";
 import { DashboardShell } from "@/components/layout/DashboardShell";

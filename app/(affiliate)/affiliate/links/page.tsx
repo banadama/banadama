@@ -1,8 +1,8 @@
 // app/(affiliate)/affiliate/links/page.tsx - Affiliate Links
-import { Card, CardBody } from "../../../../components/ui/Card";
-import { Button } from "../../../../components/ui/Button";
-import { Badge } from "../../../../components/ui/Badge";
-import { DataTable } from "../../../../components/ui/DataTable";
+import { Card, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { DataTable } from "@/components/ui/DataTable";
 import Link from "next/link";
 
 export default async function AffiliateLinks() {

@@ -1,6 +1,7 @@
+export const dynamic = 'force-dynamic';
 // app/(creator)/layout.tsx - Creator Layout
-import { DashboardShell } from "../../components/layout/DashboardShell";
-import { creatorNav } from "../../components/layout/nav.config";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { creatorNav } from "@/components/layout/nav.config";
 import { requireRole } from "@/lib/auth";
 
 export default async function CreatorLayout({ children }: { children: React.ReactNode }) {

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // app/layout.tsx - Root Layout with ToastProvider
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast/ToastProvider";

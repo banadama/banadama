@@ -1,7 +1,7 @@
 // app/(wholesaler)/wholesaler/products/page.tsx - Wholesaler Products
-import { Card, CardBody } from "../../../../components/ui/Card";
-import { Button } from "../../../../components/ui/Button";
-import { Badge } from "../../../../components/ui/Badge";
+import { Card, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 
 export default async function WholesalerProducts() {

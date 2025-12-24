@@ -1,6 +1,7 @@
+export const dynamic = 'force-dynamic';
 // app/(growth)/layout.tsx - Growth Layout
-import { DashboardShell } from "../../components/layout/DashboardShell";
-import { growthNav } from "../../components/layout/nav.config";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { growthNav } from "@/components/layout/nav.config";
 import { requireRole } from "@/lib/auth";
 
 export default async function GrowthLayout({ children }: { children: React.ReactNode }) {

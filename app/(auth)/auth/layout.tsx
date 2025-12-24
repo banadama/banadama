@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // src/app/(public)/auth/layout.tsx
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (

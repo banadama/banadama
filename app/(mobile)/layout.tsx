@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // app/(mobile)/layout.tsx - Mobile Layout (Role-based)
 import React from 'react';
 import { cookies } from 'next/headers';

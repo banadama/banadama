@@ -1,9 +1,9 @@
 // app/(public)/page.tsx - Landing Page
-import { Hero } from "../../components/sections/Hero";
-import { WhyBanadama } from "../../components/sections/WhyBanadama";
-import { HowItWorks } from "../../components/sections/HowItWorks";
-import { CTA } from "../../components/sections/CTA";
-import { Footer } from "../../components/sections/Footer";
+import { Hero } from "@/components/sections/Hero";
+import { WhyBanadama } from "@/components/sections/WhyBanadama";
+import { HowItWorks } from "@/components/sections/HowItWorks";
+import { CTA } from "@/components/sections/CTA";
+import { Footer } from "@/components/sections/Footer";
 
 export const metadata = {
     title: "Banadama - Buy Now + RFQ Marketplace | Nigeria & Bangladesh",

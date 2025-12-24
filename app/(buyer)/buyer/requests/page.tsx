@@ -1,7 +1,7 @@
 // app/(buyer)/buyer/requests/page.tsx - Buyer RFQs
-import { DataTable } from "../../../../components/ui/DataTable";
-import { Button } from "../../../../components/ui/Button";
-import { StatusBadge } from "../../../../components/ui/StatusBadge";
+import { DataTable } from "@/components/ui/DataTable";
+import { Button } from "@/components/ui/Button";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import Link from "next/link";
 
 export default async function BuyerRequests() {

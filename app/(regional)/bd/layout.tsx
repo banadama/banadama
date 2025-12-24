@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // app/bd/layout.tsx - Bangladesh Portal Layout
 import { ReactNode } from 'react';
 
