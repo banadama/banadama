@@ -2,7 +2,6 @@
   "name": "banadama-platform",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@10.0.0",
   "prisma": {
     "schema": "prisma/schema.prisma"
   },
