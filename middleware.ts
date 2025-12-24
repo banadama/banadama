@@ -1,11 +1,22 @@
-// middleware.ts - Route Protection with Session-Based Access Control
+// middleware.ts - Subdomain Routing + Auth Protection
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME, AuthSession } from "./lib/auth/session.types";
 
-/**
- * PUBLIC ROUTES - No auth required
- */
+// ============================================
+// SUBDOMAIN → ROUTE GROUP MAPPING
+// ============================================
+const SUBDOMAIN_ROUTES: Record<string, string> = {
+    admin: "/admin",
+    ops: "/ops",
+    supplier: "/supplier",
+    bd: "/growth", // Business Development maps to growth
+    ng: "/ng",
+};
+
+// ============================================
+// PUBLIC ROUTES - No auth required
+// ============================================
 const PUBLIC_ROUTES = [
     "/",
     "/start",
@@ -15,21 +26,26 @@ const PUBLIC_ROUTES = [
     "/global",
     "/creators",
     "/auth",
+    "/about",
+    "/terms",
+    "/privacy",
+    "/help",
+    "/support",
     "/api/auth/login",
     "/api/auth/register",
     "/api/marketplace",
 ];
 
-/**
- * STATIC ASSETS - Skip middleware
- */
-const STATIC_PATHS = ["/_next", "/favicon", "/manifest", "/icons", "/images"];
+// ============================================
+// STATIC ASSETS - Skip middleware
+// ============================================
+const STATIC_PATHS = ["/_next", "/favicon", "/manifest", "/icons", "/images", "/api/"];
 
-/**
- * SYSTEM ROLE → ROUTES
- */
+// ============================================
+// ROLE → ROUTES ACCESS CONTROL
+// ============================================
 const ROLE_ROUTES: Record<string, string[]> = {
-    ADMIN: ["/admin"],
+    ADMIN: ["/admin", "/ops"],
     FINANCE_ADMIN: ["/admin/finance"],
     OPS: ["/ops"],
     BUYER: ["/buyer", "/marketplace"],
@@ -37,9 +53,6 @@ const ROLE_ROUTES: Record<string, string[]> = {
     GROWTH_MANAGER: ["/growth", "/admin/studio/growth-settings"],
 };
 
-/**
- * ACCOUNT TYPE → ROUTES
- */
 const ACCOUNT_ROUTES: Record<string, string[]> = {
     BUYER: ["/buyer", "/marketplace"],
     COMPANY_FACTORY: ["/factory"],
@@ -53,10 +66,35 @@ const ACCOUNT_ROUTES: Record<string, string[]> = {
     AFFILIATE: ["/affiliate"],
 };
 
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+function getSubdomain(host: string): string | null {
+    // Handle localhost for development (no subdomain routing)
+    if (host.includes("localhost") || host.includes("127.0.0.1")) {
+        return null;
+    }
+
+    // Extract subdomain from host (remove port if present)
+    const cleanHost = host.replace(/:\d+$/, "");
+    const parts = cleanHost.split(".");
+
+    // Handle www redirect
+    if (parts[0] === "www") {
+        return "www";
+    }
+
+    // Check if it's a subdomain (e.g., admin.banadama.com has 3 parts)
+    if (parts.length > 2) {
+        return parts[0];
+    }
+
+    return null; // Main domain (banadama.com)
+}
+
 function isPublicRoute(path: string): boolean {
-    return PUBLIC_ROUTES.some(
-        (route) => path === route || path.startsWith(`${route}/`)
-    );
+    return PUBLIC_ROUTES.some((route) => path === route || path.startsWith(`${route}/`));
 }
 
 function isStaticPath(path: string): boolean {
@@ -64,11 +102,9 @@ function isStaticPath(path: string): boolean {
 }
 
 function roleCanAccessRoute(role: string, path: string): boolean {
-    // ADMIN can access everything
     if (role === "ADMIN") {
         return path.startsWith("/admin") || path.startsWith("/ops");
     }
-
     const allowedRoutes = ROLE_ROUTES[role] || [];
     return allowedRoutes.some((route) => path.startsWith(route));
 }
@@ -76,68 +112,6 @@ function roleCanAccessRoute(role: string, path: string): boolean {
 function accountCanAccessRoute(type: string, path: string): boolean {
     const allowedRoutes = ACCOUNT_ROUTES[type] || [];
     return allowedRoutes.some((route) => path.startsWith(route));
-}
-
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-
-    // Skip static assets
-    if (isStaticPath(pathname)) {
-        return NextResponse.next();
-    }
-
-    // Allow public routes
-    if (isPublicRoute(pathname)) {
-        return NextResponse.next();
-    }
-
-    // Allow API routes (they handle their own auth)
-    if (pathname.startsWith("/api/")) {
-        return NextResponse.next();
-    }
-
-    // Get session from cookie
-    const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
-
-    if (!sessionCookie?.value) {
-        // Not authenticated - redirect to login
-        const loginUrl = new URL("/auth/login", request.url);
-        loginUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(loginUrl);
-    }
-
-    try {
-        // Parse session
-        const session: AuthSession = JSON.parse(sessionCookie.value);
-
-        // Check expiration
-        if (session.expiresAt < Date.now()) {
-            const loginUrl = new URL("/auth/login", request.url);
-            loginUrl.searchParams.set("redirect", pathname);
-            return NextResponse.redirect(loginUrl);
-        }
-
-        const { role } = session.user;
-        const { type } = session.activeAccount;
-
-        // Check role-based access
-        if (roleCanAccessRoute(role, pathname)) {
-            return NextResponse.next();
-        }
-
-        // Check account-based access
-        if (accountCanAccessRoute(type, pathname)) {
-            return NextResponse.next();
-        }
-
-        // Access denied - redirect to appropriate dashboard
-        const dashboardUrl = getDashboardUrl(session);
-        return NextResponse.redirect(new URL(dashboardUrl, request.url));
-    } catch (error) {
-        console.error("Middleware session parse error:", error);
-        const loginUrl = new URL("/auth/login", request.url);
-        return NextResponse.redirect(loginUrl);
-    }
 }
 
 function getDashboardUrl(session: AuthSession): string {
@@ -176,6 +150,93 @@ function getDashboardUrl(session: AuthSession): string {
         case "BUYER":
         default:
             return "/buyer/dashboard";
+    }
+}
+
+// ============================================
+// MIDDLEWARE
+// ============================================
+
+export function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+    const host = request.headers.get("host") || "";
+
+    // 1. Skip static assets
+    if (isStaticPath(pathname)) {
+        return NextResponse.next();
+    }
+
+    // 2. Get subdomain
+    const subdomain = getSubdomain(host);
+
+    // 3. Handle www → apex domain redirect
+    if (subdomain === "www") {
+        const url = request.nextUrl.clone();
+        url.host = host.replace("www.", "");
+        return NextResponse.redirect(url, 301);
+    }
+
+    // 4. Subdomain-based routing (rewrite URL to route group)
+    if (subdomain && SUBDOMAIN_ROUTES[subdomain]) {
+        const targetPath = SUBDOMAIN_ROUTES[subdomain];
+
+        // Only rewrite if not already on the target path and not an API route
+        if (!pathname.startsWith(targetPath) && !pathname.startsWith("/api")) {
+            const url = request.nextUrl.clone();
+            url.pathname = `${targetPath}${pathname === "/" ? "" : pathname}`;
+            return NextResponse.rewrite(url);
+        }
+    }
+
+    // 5. Allow API routes (they handle their own auth)
+    if (pathname.startsWith("/api/")) {
+        return NextResponse.next();
+    }
+
+    // 6. Allow public routes
+    if (isPublicRoute(pathname)) {
+        return NextResponse.next();
+    }
+
+    // 7. Auth check for protected routes
+    const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
+
+    if (!sessionCookie?.value) {
+        const loginUrl = new URL("/auth/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    try {
+        const session: AuthSession = JSON.parse(sessionCookie.value);
+
+        // Check expiration
+        if (session.expiresAt < Date.now()) {
+            const loginUrl = new URL("/auth/login", request.url);
+            loginUrl.searchParams.set("redirect", pathname);
+            return NextResponse.redirect(loginUrl);
+        }
+
+        const { role } = session.user;
+        const { type } = session.activeAccount;
+
+        // Check role-based access
+        if (roleCanAccessRoute(role, pathname)) {
+            return NextResponse.next();
+        }
+
+        // Check account-based access
+        if (accountCanAccessRoute(type, pathname)) {
+            return NextResponse.next();
+        }
+
+        // Access denied - redirect to appropriate dashboard
+        const dashboardUrl = getDashboardUrl(session);
+        return NextResponse.redirect(new URL(dashboardUrl, request.url));
+    } catch (error) {
+        console.error("Middleware session parse error:", error);
+        const loginUrl = new URL("/auth/login", request.url);
+        return NextResponse.redirect(loginUrl);
     }
 }
 
