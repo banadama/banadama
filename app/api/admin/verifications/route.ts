@@ -4,15 +4,14 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { VerificationStatus, VerificationType } from "@prisma/client";
 
+// Local type definitions to avoid @prisma/client import during build
+type VerificationStatus = "PENDING" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
+type VerificationType = "USER_KYC" | "SUPPLIER" | "CREATOR";
 
 // GET /api/admin/verifications - List all requests (Admin/Ops)
 export async function GET(request: NextRequest) {
     try {
-        // Contract says ADMIN, but usually OPS handles this too.
-        // Strict adherence to contract naming, but pragmatically Ops need access.
-        // Spec says: "GET /api/admin/verifications ... (ADMIN)"
         const { error } = await requireApiRole(["ADMIN", "OPS"]);
 
         if (error) {
@@ -38,7 +37,7 @@ export async function GET(request: NextRequest) {
                         select: { id: true, email: true, role: true, country: true },
                     },
                 },
-                orderBy: { createdAt: "asc" }, // Oldest first for queue
+                orderBy: { createdAt: "asc" },
                 skip,
                 take: limit,
             }),

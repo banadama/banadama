@@ -1,26 +1,60 @@
-import { PrismaClient } from '@prisma/client'
+// lib/db.ts - Lazy Prisma Client with Dynamic Import
+// This prevents Prisma from being loaded during Next.js static analysis
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+let _prismaInstance: any = null;
+let _prismaPromise: Promise<any> | null = null;
 
-export const getPrisma = () => {
-    if (!_prismaInstance) {
-        _prismaInstance = globalForPrisma.prisma || new PrismaClient({
-            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-        })
-        if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = _prismaInstance
+async function initPrisma() {
+    if (_prismaInstance) return _prismaInstance;
+
+    if (!_prismaPromise) {
+        _prismaPromise = import('@prisma/client').then(({ PrismaClient }) => {
+            const globalForPrisma = global as unknown as { prisma: any };
+
+            _prismaInstance = globalForPrisma.prisma || new PrismaClient({
+                log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+            });
+
+            if (process.env.NODE_ENV !== 'production') {
+                globalForPrisma.prisma = _prismaInstance;
+            }
+
+            return _prismaInstance;
+        });
     }
-    return _prismaInstance
+
+    return _prismaPromise;
 }
 
-let _prismaInstance: PrismaClient
+// Create a proxy that initializes Prisma on first access
+function createLazyProxy() {
+    return new Proxy({} as any, {
+        get: (target, prop) => {
+            // Return a function that will initialize and call the method
+            if (typeof prop === 'string') {
+                // For model properties (user, account, etc.), return a proxy for the model
+                return new Proxy({} as any, {
+                    get: (modelTarget, modelProp) => {
+                        return async (...args: any[]) => {
+                            const client = await initPrisma();
+                            const model = (client as any)[prop];
+                            if (model && typeof model[modelProp] === 'function') {
+                                return model[modelProp](...args);
+                            }
+                            return model?.[modelProp];
+                        };
+                    }
+                });
+            }
+            return undefined;
+        }
+    });
+}
 
-// Export a proxy as 'db' and 'prisma' to maintain compatibility while being lazy
-export const db = new Proxy({} as PrismaClient, {
-    get: (target, prop) => {
-        // If it's a known prisma property or model, initialize
-        const client = getPrisma()
-        return (client as any)[prop]
-    }
-})
+export const db = createLazyProxy();
+export const prisma = db;
 
-export const prisma = db
+// Export a getter for direct access when needed
+export async function getDb() {
+    return initPrisma();
+}

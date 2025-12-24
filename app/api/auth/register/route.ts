@@ -1,13 +1,14 @@
 // app/api/auth/register/route.ts
-
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { setSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
-import type { Role } from "@prisma/client";
 
+// Local type definition to avoid @prisma/client import during build
+type Role = "BUYER" | "SUPPLIER" | "FACTORY" | "WHOLESALER" | "CREATOR" | "OPS" | "AFFILIATE" | "ADMIN" | "FINANCE_ADMIN" | "GROWTH_AGENT" | "GROWTH_MANAGER";
 
 export async function POST(request: NextRequest) {
     try {
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create user and profile in transaction
-        const result = await db.$transaction(async (tx) => {
+        const result = await db.$transaction(async (tx: any) => {
             // Create user
             const user = await tx.user.create({
                 data: {
@@ -130,10 +131,6 @@ export async function POST(request: NextRequest) {
                     status: "ACTIVE",
                 },
             });
-
-            // Store hashed password (if you have a password field, otherwise use Supabase)
-            // This implementation assumes you're using Supabase for auth
-            // If using custom auth, add a Password model
 
             return user;
         });

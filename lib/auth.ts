@@ -5,7 +5,20 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import { db } from "./db";
-import type { Role } from "@prisma/client";
+
+// Define Role type locally to avoid importing from @prisma/client during build
+type Role =
+    | "BUYER"
+    | "SUPPLIER"
+    | "FACTORY"
+    | "WHOLESALER"
+    | "CREATOR"
+    | "OPS"
+    | "AFFILIATE"
+    | "ADMIN"
+    | "FINANCE_ADMIN"
+    | "GROWTH_AGENT"
+    | "GROWTH_MANAGER";
 
 // ============================================
 // TYPES

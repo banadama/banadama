@@ -4,8 +4,9 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { VerificationStatus } from "@prisma/client";
 
+// Local type definition to avoid @prisma/client import during build
+type VerificationStatus = "PENDING" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
 
 // PATCH /api/admin/verifications/[id] - Approve/Reject
 export async function PATCH(
@@ -13,7 +14,7 @@ export async function PATCH(
     { params }: { params: { id: string } }
 ) {
     try {
-        const { user: admin, error } = await requireApiRole(["ADMIN"]); // Strict ADMIN as per spec
+        const { user: admin, error } = await requireApiRole(["ADMIN"]);
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: error.status });
@@ -51,7 +52,7 @@ export async function PATCH(
         }
 
         // Update in transaction
-        const updated = await db.$transaction(async (tx) => {
+        const updated = await db.$transaction(async (tx: any) => {
             // 1. Update request
             const req = await tx.verificationRequest.update({
                 where: { id },
@@ -76,12 +77,11 @@ export async function PATCH(
                 });
 
                 // Add verified badge logic here if needed
-                // For example, update SupplierProfile.isVerified
                 if (verificationRequest.type === "SUPPLIER") {
                     await tx.supplierProfile.update({
                         where: { userId: verificationRequest.userId },
                         data: { isVerified: true }
-                    }).catch(() => null); // Ignore if profile missing
+                    }).catch(() => null);
                 }
             }
 
@@ -93,7 +93,7 @@ export async function PATCH(
             verification: updated,
         });
     } catch (error) {
-        console.error("Error updates verification:", error);
+        console.error("Error updating verification:", error);
         return NextResponse.json(
             { error: "Failed to update verification" },
             { status: 500 }
