@@ -1,8 +1,12 @@
 // app/api/ops/creator-jobs/route.ts - Ops Manage Creator Jobs
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 export async function GET(request: NextRequest) {
     const { error } = await requireApiRole('OPS');

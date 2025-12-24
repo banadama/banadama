@@ -1,4 +1,7 @@
 // app/api/cart/items/route.ts - Cart Items API (POST - add item)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 

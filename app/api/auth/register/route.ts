@@ -1,9 +1,13 @@
 // app/api/auth/register/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { setSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import type { Role } from "@prisma/client";
+
 
 export async function POST(request: NextRequest) {
     try {

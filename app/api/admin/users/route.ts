@@ -1,8 +1,12 @@
 // app/api/admin/users/route.ts - Admin Users API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // GET /api/admin/users - List all users with accounts
 export async function GET(request: NextRequest) {

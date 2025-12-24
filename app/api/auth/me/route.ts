@@ -1,4 +1,7 @@
 // app/api/auth/me/route.ts - Get Current Session
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser, getRoleDashboard } from "@/lib/auth";
 

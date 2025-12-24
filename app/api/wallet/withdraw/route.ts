@@ -1,7 +1,11 @@
 // app/api/wallet/withdraw/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
+
 
 export async function POST(request: NextRequest) {
     try {

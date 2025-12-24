@@ -1,7 +1,11 @@
 // app/api/rfq/[id]/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // GET - Get single RFQ by ID
 export async function GET(

@@ -1,6 +1,10 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { isWithinAttributionWindow } from "@/config/affiliate";
+
 
 // POST /api/affiliate/track-click - Record a link click
 export async function POST(request: NextRequest) {

@@ -1,4 +1,7 @@
 // app/api/checkout-sessions/[id]/route.ts - Checkout Session API (GET, PATCH)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 

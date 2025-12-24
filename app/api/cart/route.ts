@@ -1,4 +1,7 @@
 // app/api/cart/route.ts - Cart API (GET, DELETE)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 

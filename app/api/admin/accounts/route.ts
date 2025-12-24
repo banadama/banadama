@@ -1,7 +1,11 @@
 // app/api/admin/accounts/route.ts - Admin Accounts API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // GET /api/admin/accounts - List all accounts
 export async function GET(request: NextRequest) {

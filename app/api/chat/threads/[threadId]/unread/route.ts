@@ -1,6 +1,10 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
 import { requireRole, getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   const me = await getCurrentUser();

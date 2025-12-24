@@ -1,5 +1,9 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
 
 type SortKey = "RELEVANCE" | "NEWEST" | "PRICE_LOW" | "PRICE_HIGH";
 type SourceKey = "ALL" | "PRODUCTS" | "CREATORS_DIGITAL";

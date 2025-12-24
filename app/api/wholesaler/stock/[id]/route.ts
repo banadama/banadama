@@ -1,7 +1,11 @@
 // app/api/wholesaler/stock/[id]/route.ts - Update Stock
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 export async function PATCH(
     request: NextRequest,

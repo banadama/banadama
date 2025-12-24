@@ -1,7 +1,11 @@
 // app/api/auth/switch-account/route.ts - Switch Active Account
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser, setSession, AuthUser } from "@/lib/auth";
+
 
 /**
  * POST /api/auth/switch-account

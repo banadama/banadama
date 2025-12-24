@@ -1,8 +1,12 @@
 // app/api/admin/site-settings/route.ts - Site Settings Admin API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // GET /api/admin/site-settings - List all site settings
 export async function GET(request: NextRequest) {

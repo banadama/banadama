@@ -1,8 +1,12 @@
 // app/api/admin/finance/orders/[id]/refund/route.ts - Order Refund API (FINANCE_ADMIN)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireApiRole } from "@/lib/auth";
 import { logAdminAction, createSnapshot } from "@/lib/audit";
+
 
 // POST /api/admin/finance/orders/[id]/refund
 export async function POST(

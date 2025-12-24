@@ -1,8 +1,12 @@
 // app/api/admin/accounts/[id]/verify/route.ts - Verification Control API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // PATCH /api/admin/accounts/[id]/verify - Assign or change verification level
 export async function PATCH(

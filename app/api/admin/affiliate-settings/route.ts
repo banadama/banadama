@@ -1,8 +1,12 @@
 // app/api/admin/affiliate-settings/route.ts - Affiliate Program Settings
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // GET - Get settings
 export async function GET(request: NextRequest) {

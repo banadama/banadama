@@ -1,6 +1,10 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
+
 
 export async function GET(req: Request) {
     const me = await requireRole("OPS");

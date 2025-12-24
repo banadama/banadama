@@ -1,7 +1,11 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { calculateSaleCommission } from "@/config/affiliate";
+
 
 // POST /api/affiliate/track-sale - Record a sale/conversion (Internal/Admin)
 export async function POST(request: NextRequest) {

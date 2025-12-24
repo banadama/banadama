@@ -1,8 +1,12 @@
 // app/api/affiliate/links/route.ts - Affiliate Links CRUD
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { randomBytes } from 'crypto';
+
 
 // GET - List affiliate's links
 export async function GET(request: NextRequest) {

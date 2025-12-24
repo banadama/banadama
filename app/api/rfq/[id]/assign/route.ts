@@ -1,7 +1,11 @@
 // app/api/rfq/[id]/assign/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // POST - Assign supplier to RFQ (Ops only)
 export async function POST(

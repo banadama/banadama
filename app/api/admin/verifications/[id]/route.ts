@@ -1,7 +1,11 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { VerificationStatus } from "@prisma/client";
+
 
 // PATCH /api/admin/verifications/[id] - Approve/Reject
 export async function PATCH(

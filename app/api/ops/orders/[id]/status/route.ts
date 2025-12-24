@@ -1,7 +1,11 @@
 // app/api/ops/orders/[id]/status/route.ts - OPS Order Status Update (LIMITED)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // OPS can only update to certain statuses (execution, not payment)
 const ALLOWED_OPS_STATUS_UPDATES: Record<string, string[]> = {

@@ -1,7 +1,11 @@
 // app/api/admin/audit-log/route.ts - Audit Log Admin API (READ ONLY)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // GET /api/admin/audit-log - List audit logs
 export async function GET(request: NextRequest) {

@@ -1,4 +1,7 @@
 // app/api/checkout-sessions/[id]/pay/route.ts - Checkout Session Pay API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 

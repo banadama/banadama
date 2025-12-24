@@ -1,8 +1,12 @@
 // app/api/growth/onboard-supplier/route.ts - Onboard Supplier
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 export async function POST(request: NextRequest) {
     const { user, error } = await requireApiRole('GROWTH_AGENT');

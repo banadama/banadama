@@ -1,8 +1,12 @@
 // app/api/admin/trade/countries/route.ts - Country Management
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // Whitelisted countries that CAN be added (safety check)
 const ALLOWED_COUNTRY_CODES = new Set([

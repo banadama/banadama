@@ -1,4 +1,7 @@
 // app/api/auth/logout/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
 import { clearSession } from "@/lib/auth";
 

@@ -1,8 +1,12 @@
 // app/api/auth/login/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { setSession, getRoleDashboard } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+
 
 export async function POST(request: NextRequest) {
     try {

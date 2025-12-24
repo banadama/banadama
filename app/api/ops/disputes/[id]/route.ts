@@ -1,7 +1,11 @@
 // app/api/ops/disputes/[id]/route.ts - OPS Single Dispute View
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 export async function GET(
     request: NextRequest,

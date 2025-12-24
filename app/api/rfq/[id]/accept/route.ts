@@ -1,7 +1,11 @@
 // app/api/rfq/[id]/accept/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // POST - Accept quote and create order (Buyer only)
 export async function POST(

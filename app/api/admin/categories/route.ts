@@ -1,8 +1,12 @@
 // app/api/admin/categories/route.ts - Admin Categories API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireApiRole } from "@/lib/auth";
 import { logAdminAction, createSnapshot } from "@/lib/audit";
+
 
 // GET /api/admin/categories
 export async function GET(request: NextRequest) {

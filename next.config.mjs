@@ -9,6 +9,9 @@ const nextConfig = {
     // Also ignore ESLint errors during build (can run separately)
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverComponentsExternalPackages: ["@prisma/client"],
+  },
 
   async redirects() {
     return [

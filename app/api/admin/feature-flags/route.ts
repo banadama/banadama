@@ -1,8 +1,12 @@
 // app/api/admin/feature-flags/route.ts - Feature Flags Admin API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+
 
 // GET /api/admin/feature-flags - List all feature flags
 export async function GET(request: NextRequest) {

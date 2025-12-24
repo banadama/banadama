@@ -1,6 +1,10 @@
 // app/api/locations/route.ts - Public Locations Endpoint
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);

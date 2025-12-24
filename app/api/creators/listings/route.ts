@@ -1,5 +1,9 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
 
 function toInt(v: string | null, def: number) {
     const n = Number(v);

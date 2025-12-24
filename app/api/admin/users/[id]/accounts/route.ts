@@ -1,8 +1,12 @@
 // app/api/admin/users/[id]/accounts/route.ts - Add accounts to user
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // POST /api/admin/users/[id]/accounts - Add an account to a user
 export async function POST(

@@ -1,7 +1,11 @@
 // app/api/affiliate/track-supplier-verified/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
+
 
 /**
  * POST /api/affiliate/track-supplier-verified

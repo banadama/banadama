@@ -1,7 +1,11 @@
 // app/api/admin/products/route.ts - Product & Listing Control API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // GET /api/admin/products - List products with admin controls
 export async function GET(request: NextRequest) {

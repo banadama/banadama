@@ -1,8 +1,12 @@
 // app/api/admin/users/[id]/status/route.ts - User Status Update API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireApiRole } from "@/lib/auth";
 import { logAdminAction, createSnapshot } from "@/lib/audit";
+
 
 // PATCH /api/admin/users/[id]/status
 export async function PATCH(

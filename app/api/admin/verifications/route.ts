@@ -1,7 +1,11 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { VerificationStatus, VerificationType } from "@prisma/client";
+
 
 // GET /api/admin/verifications - List all requests (Admin/Ops)
 export async function GET(request: NextRequest) {

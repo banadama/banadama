@@ -1,7 +1,11 @@
 // app/api/ops/disputes/[id]/status/route.ts - OPS Dispute Status Update (LIMITED)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // OPS can only change to INVESTIGATING, not resolve
 const ALLOWED_OPS_STATUS = ['INVESTIGATING'];

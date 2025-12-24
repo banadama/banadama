@@ -1,9 +1,13 @@
 // app/api/chat/threads/[threadId]/messages/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { sendMessage, getThreadMessages, markAsRead } from "@/lib/chat";
 import { db } from "@/lib/db";
 import { sendPushToAccount } from "@/lib/push/sendPush";
+
 
 // GET - Get thread messages
 export async function GET(

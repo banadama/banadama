@@ -1,8 +1,12 @@
 // app/api/creator/setup/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CreatorType } from "@/types/creator";
+
 
 export async function POST(req: NextRequest) {
     try {

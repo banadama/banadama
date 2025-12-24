@@ -1,8 +1,12 @@
 // app/api/rfq/[id]/quote/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { calculateFullPricing } from "@/lib/pricing";
+
 
 // POST - Generate quote for RFQ (Ops only)
 export async function POST(

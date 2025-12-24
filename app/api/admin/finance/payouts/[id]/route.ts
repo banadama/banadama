@@ -1,8 +1,12 @@
 // app/api/admin/finance/payouts/[id]/route.ts - Payout Actions (FINANCE_ADMIN only)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 export async function PATCH(
     request: NextRequest,

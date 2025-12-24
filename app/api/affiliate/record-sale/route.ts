@@ -1,8 +1,12 @@
 // app/api/affiliate/record-sale/route.ts - Record Affiliate Sale (Internal use)
 // This should be called when an order is placed
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { cookies } from 'next/headers';
+
 
 export async function POST(request: NextRequest) {
     try {

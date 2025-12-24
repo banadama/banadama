@@ -1,7 +1,11 @@
 // app/api/affiliate/confirm-delivery/route.ts - Unlock Affiliate Commission (Internal)
 // Called when delivery is confirmed to unlock commission
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+
 
 export async function POST(request: NextRequest) {
     try {

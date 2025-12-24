@@ -1,8 +1,12 @@
 // app/api/admin/trade-control/route.ts - Admin Trade Control API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireApiRole } from "@/lib/auth";
 import { logAdminAction, createSnapshot } from "@/lib/audit";
+
 
 const TRADE_CONTROL_KEY = "trade_control";
 

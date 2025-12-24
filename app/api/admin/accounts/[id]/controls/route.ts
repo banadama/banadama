@@ -1,4 +1,7 @@
 // app/api/admin/accounts/[id]/controls/route.ts - Account Freeze & Limit Controls
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
@@ -7,9 +10,9 @@ import { logAdminAction, createSnapshot } from '@/lib/audit';
 // GET /api/admin/accounts/[id]/controls - Get account control status
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const { id } = await params;
+    const { id } = params;
     const { error } = await requireApiRole('ADMIN');
     if (error) {
         return NextResponse.json({ error: error.message }, { status: error.status });
@@ -44,9 +47,9 @@ export async function GET(
 // PATCH /api/admin/accounts/[id]/controls - Update account controls
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const { id } = await params;
+    const { id } = params;
     const { user: admin, error } = await requireApiRole('ADMIN');
     if (error) {
         return NextResponse.json({ error: error.message }, { status: error.status });
@@ -181,4 +184,12 @@ export async function PATCH(
             { status: 500 }
         );
     }
+}
+
+// POST /api/admin/accounts/[id]/controls - Alias for PATCH
+export async function POST(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
+    return PATCH(request, context);
 }

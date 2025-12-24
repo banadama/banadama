@@ -1,8 +1,12 @@
 // app/api/admin/wholesalers/[id]/route.ts - Admin Wholesaler Actions
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 export async function GET(
     request: NextRequest,

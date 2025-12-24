@@ -1,8 +1,12 @@
 // app/api/admin/users/[id]/route.ts - Single User Admin API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // GET /api/admin/users/[id] - Get single user with accounts
 export async function GET(

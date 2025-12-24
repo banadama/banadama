@@ -1,6 +1,10 @@
 // app/api/products/route.ts - Products API with Supplier Location
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;

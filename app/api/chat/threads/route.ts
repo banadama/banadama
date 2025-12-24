@@ -1,4 +1,7 @@
 // app/api/chat/threads/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { createThread, getUserThreads, getAllowedThreadTypes } from "@/lib/chat";

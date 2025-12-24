@@ -1,7 +1,11 @@
 // app/api/affiliate/withdraw/route.ts - Affiliate Withdrawal
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // GET - Withdrawal info
 export async function GET(request: NextRequest) {

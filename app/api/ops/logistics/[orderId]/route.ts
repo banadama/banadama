@@ -1,8 +1,12 @@
 // app/api/ops/logistics/[orderId]/route.ts - Single Shipment
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
 import { logAdminAction, createSnapshot } from '@/lib/audit';
+
 
 // GET - Get shipment details
 export async function GET(

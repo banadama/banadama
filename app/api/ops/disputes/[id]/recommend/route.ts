@@ -1,7 +1,11 @@
 // app/api/ops/disputes/[id]/recommend/route.ts - OPS Dispute Recommendation (NOT Resolution)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 // OPS can only RECOMMEND, not RESOLVE
 export async function PATCH(

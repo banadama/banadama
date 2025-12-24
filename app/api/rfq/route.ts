@@ -1,7 +1,11 @@
 // app/api/rfq/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // POST - Create new RFQ (Buyer only)
 export async function POST(req: NextRequest) {

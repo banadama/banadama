@@ -1,7 +1,11 @@
 // app/api/orders/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // GET - Get orders for current user (role-based)
 export async function GET(req: NextRequest) {

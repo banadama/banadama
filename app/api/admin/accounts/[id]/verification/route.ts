@@ -1,8 +1,12 @@
 // app/api/admin/accounts/[id]/verification/route.ts - Account Verification Tick API
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireApiRole } from "@/lib/auth";
 import { logAdminAction, createSnapshot } from "@/lib/audit";
+
 
 // PATCH /api/admin/accounts/[id]/verification
 export async function PATCH(

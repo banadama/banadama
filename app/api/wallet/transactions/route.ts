@@ -1,7 +1,11 @@
 // app/api/wallet/transactions/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiRole } from "@/lib/auth";
 import { db } from "@/lib/db";
+
 
 export async function GET(request: NextRequest) {
     try {

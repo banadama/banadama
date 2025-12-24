@@ -1,7 +1,11 @@
 // app/api/growth/earnings/route.ts - Growth Earnings
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 export async function GET(request: NextRequest) {
     const { user, error } = await requireApiRole('GROWTH_AGENT');

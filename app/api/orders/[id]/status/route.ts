@@ -1,7 +1,11 @@
 // app/api/orders/[id]/status/route.ts
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+
 
 // Valid status transitions
 const STATUS_TRANSITIONS: Record<string, string[]> = {

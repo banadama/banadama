@@ -1,7 +1,11 @@
 // app/api/ops/disputes/route.ts - OPS Dispute View (LIMITED - Read + Recommend Only)
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 export async function GET(request: NextRequest) {
     const { error } = await requireApiRole(['OPS', 'ADMIN']);

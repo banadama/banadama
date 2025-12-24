@@ -1,7 +1,11 @@
 // app/api/admin/analytics/insights/route.ts - AI Insights List
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireApiRole } from '@/lib/auth';
+
 
 export async function GET(request: NextRequest) {
     const { user, error } = await requireApiRole(['ADMIN', 'OPS', 'FINANCE_ADMIN']);
