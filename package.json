@@ -10,7 +10,6 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "test": "jest",
-    "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio"
@@ -46,5 +45,6 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
-  }
+  },
+  "packageManager": "pnpm@9.12.0"
 }
