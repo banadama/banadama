@@ -7,7 +7,7 @@ export default function BlogPage() {
     const ClockIcon = Icons.get("Clock");
     const UserIcon = Icons.get("User");
 
-    // Sample blog posts - In production, these would come from a CMS or database
+    // Sample blog posts
     const blogPosts = [
         {
             id: 1,
@@ -17,7 +17,7 @@ export default function BlogPage() {
             date: "December 20, 2025",
             readTime: "5 min read",
             category: "Sourcing",
-            image: "https://via.placeholder.com/600x400/f97316/ffffff?text=B2B+Sourcing"
+            image: "https://via.placeholder.com/600x400/5bc5cf/ffffff?text=B2B+Sourcing"
         },
         {
             id: 2,
@@ -72,114 +72,38 @@ export default function BlogPage() {
     ];
 
     return (
-        <div className="bd-container bd-page">
-            <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "60px 20px" }}>
-                <BookOpenIcon size={64} style={{ margin: "0 auto 20px", opacity: 0.8 }} />
-                <h1 className="bd-h1" style={{ fontSize: 36, marginBottom: 12 }}>Banadama Reads</h1>
-                <p style={{ color: "var(--bd-muted)", fontSize: 16 }}>
-                    Insights, tips, and stories from the world of B2B trade
-                </p>
-            </div>
-
-            <div style={{ maxWidth: 1200, margin: "40px auto" }}>
-                {/* Categories */}
-                <div style={{ marginBottom: 40, textAlign: "center" }}>
-                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                        <button className="bd-btn bd-btn-primary">All Posts</button>
-                        <button className="bd-btn">Sourcing</button>
-                        <button className="bd-btn">Payments</button>
-                        <button className="bd-btn">RFQ</button>
-                        <button className="bd-btn">Markets</button>
-                        <button className="bd-btn">Trust & Safety</button>
-                        <button className="bd-btn">Finance</button>
-                    </div>
+        <div style={{ backgroundColor: '#5bc5cf', minHeight: '100vh' }}>
+            <header style={{ backgroundColor: '#2b3d2d', padding: '1rem 0', borderBottom: '2px solid white' }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+                    <h1 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>Banadama Reads</h1>
+                    <p style={{ color: 'white', opacity: 0.9, margin: '0.5rem 0 0 0' }}>Insights, tips, and stories from the world of B2B trade</p>
                 </div>
+            </header>
 
-                {/* Blog Posts Grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: 30 }}>
+            <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
                     {blogPosts.map((post) => (
-                        <article key={post.id} className="bd-card" style={{ overflow: "hidden", cursor: "pointer", transition: "transform 0.2s" }}>
-                            <div style={{
-                                background: `url(${post.image})`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                                height: 200,
-                                position: "relative"
-                            }}>
-                                <div style={{
-                                    position: "absolute",
-                                    top: 12,
-                                    right: 12,
-                                    background: "var(--bd-brand)",
-                                    color: "white",
-                                    padding: "4px 12px",
-                                    borderRadius: 999,
-                                    fontSize: 12,
-                                    fontWeight: 700
-                                }}>
-                                    {post.category}
-                                </div>
+                        <div key={post.id} style={{ backgroundColor: 'white', borderRadius: '0.5rem', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                            <div style={{ backgroundColor: '#5bc5cf', height: '120px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ backgroundColor: '#2b3d2d', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700 }}>{post.category}</span>
                             </div>
-
-                            <div className="bd-card-pad">
-                                <h3 style={{ fontWeight: 900, fontSize: 20, marginBottom: 12, lineHeight: 1.3 }}>
-                                    {post.title}
-                                </h3>
-
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
-                                    {post.excerpt}
-                                </p>
-
-                                <div style={{ display: "flex", gap: 16, alignItems: "center", fontSize: 13, color: "var(--bd-muted)", borderTop: "1px solid var(--bd-border)", paddingTop: 12 }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <UserIcon size={14} />
-                                        <span>{post.author}</span>
-                                    </div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <ClockIcon size={14} />
-                                        <span>{post.readTime}</span>
-                                    </div>
+                            <div style={{ padding: '1.5rem' }}>
+                                <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.75rem', fontSize: '1rem' }}>{post.title}</h3>
+                                <p style={{ color: '#666', fontSize: '0.875rem', lineHeight: '1.6', marginBottom: '1rem' }}>{post.excerpt}</p>
+                                <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.75rem', color: '#999', marginBottom: '1rem' }}>
+                                    <span>{post.author}</span>
+                                    <span>•</span>
+                                    <span>{post.date}</span>
                                 </div>
-
-                                <div style={{ fontSize: 13, color: "var(--bd-muted)", marginTop: 8 }}>
-                                    {post.date}
-                                </div>
-
-                                <button className="bd-btn bd-btn-primary" style={{ width: "100%", marginTop: 16 }}>
-                                    Read Article
-                                </button>
+                                <button style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}>Read More</button>
                             </div>
-                        </article>
+                        </div>
                     ))}
                 </div>
-
-                {/* Load More */}
-                <div style={{ textAlign: "center", marginTop: 60 }}>
-                    <button className="bd-btn bd-btn-lg">
-                        Load More Articles
-                    </button>
+                <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                    <a href="/marketplace" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500 }}>Back to Marketplace</a>
                 </div>
-
-                {/* Newsletter Signup */}
-                <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "60px 20px", marginTop: 60 }}>
-                    <h2 className="bd-h2" style={{ marginBottom: 16 }}>Never Miss an Update</h2>
-                    <p style={{ color: "var(--bd-muted)", marginBottom: 30, maxWidth: 600, margin: "0 auto 30px" }}>
-                        Subscribe to Banadama Reads and get the latest insights, tips, and trade news delivered to your inbox every week.
-                    </p>
-                    <form style={{ maxWidth: 500, margin: "0 auto", display: "flex", gap: 12 }}>
-                        <input
-                            type="email"
-                            placeholder="Enter your email address"
-                            className="bd-input"
-                            style={{ flex: 1 }}
-                            required
-                        />
-                        <button type="submit" className="bd-btn bd-btn-primary">
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
-            </div>
+            </main>
         </div>
     );
 }

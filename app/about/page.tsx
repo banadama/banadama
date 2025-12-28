@@ -7,126 +7,146 @@ export default function AboutPage() {
     const ShieldIcon = Icons.get("Shield");
 
     return (
-        <div className="bd-container bd-page">
-            {/* Hero */}
-            <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "80px 20px" }}>
-                <h1 className="bd-h1" style={{ fontSize: 42, marginBottom: 20 }}>About Banadama</h1>
-                <p className="bd-p" style={{ fontSize: 20, maxWidth: 700, margin: "0 auto", color: "var(--bd-muted)" }}>
-                    Connecting buyers and suppliers through safe, escrow-protected trade across Nigeria, Bangladesh, and globally
-                </p>
-            </div>
+        <div style={{ backgroundColor: '#5bc5cf', minHeight: '100vh', position: 'relative' }}>
+            {/* Header */}
+            <header style={{ backgroundColor: '#2b3d2d', padding: '1rem 0', borderBottom: '2px solid white' }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+                    <h1 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>About Banadama</h1>
+                </div>
+            </header>
 
-            <div style={{ maxWidth: 900, margin: "60px auto", display: "grid", gap: 60 }}>
-                {/* Our Mission */}
-                <section>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-                        <HeartIcon size={32} style={{ color: "var(--bd-brand)" }} />
-                        <h2 className="bd-h2">Our Mission</h2>
-                    </div>
-                    <p className="bd-p" style={{ fontSize: 18, lineHeight: 1.8 }}>
+            {/* Content */}
+            <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1rem' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '2rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: '2rem' }}>
+                    <h2 style={{ color: '#2b3d2d', fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>Our Mission</h2>
+                    <p style={{ color: '#333', lineHeight: '1.8', marginBottom: '1rem' }}>
                         Banadama exists to make cross-border and local trade safe, transparent, and accessible for everyone. We believe that businesses—from small startups to large factories—deserve a platform where they can buy and sell with confidence, protected by escrow and supported by professional operations management.
                     </p>
-                </section>
+                </div>
 
-                {/* Our Story */}
-                <section>
-                    <h2 className="bd-h2" style={{ marginBottom: 24 }}>Our Story</h2>
-                    <div style={{ display: "grid", gap: 20 }}>
-                        <p className="bd-p" style={{ lineHeight: 1.8 }}>
-                            Founded in 2025, Banadama was born from a simple observation: traditional B2B marketplaces often fail to protect buyers and sellers adequately. Payment fraud, delayed shipments, and quality issues plague cross-border trade, especially in emerging markets like Nigeria and Bangladesh.
-                        </p>
-                        <p className="bd-p" style={{ lineHeight: 1.8 }}>
-                            We set out to change that by building a platform with escrow protection at its core, combined with hands-on operations management to ensure every transaction is completed fairly. Today, Banadama serves thousands of businesses across multiple countries, facilitating millions in secure transactions every month.
-                        </p>
-                    </div>
-                </section>
-
-                {/* What Makes Us Different */}
-                <section>
-                    <h2 className="bd-h2" style={{ marginBottom: 30 }}>What Makes Us Different</h2>
-                    <div style={{ display: "grid", gap: 20 }}>
-                        <div className="bd-card bd-card-pad">
-                            <div style={{ display: "flex", alignItems: "start", gap: 16 }}>
-                                <ShieldIcon size={32} style={{ color: "var(--bd-brand)", flexShrink: 0 }} />
-                                <div>
-                                    <h3 style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>Escrow Protection</h3>
-                                    <p style={{ color: "var(--bd-muted)", lineHeight: 1.6, margin: 0 }}>
-                                        Every transaction is protected by our escrow system. Funds are only released after delivery confirmation, ensuring both buyers and sellers are protected.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bd-card bd-card-pad">
-                            <div style={{ display: "flex", alignItems: "start", gap: 16 }}>
-                                <UsersIcon size={32} style={{ color: "var(--bd-brand)", flexShrink: 0 }} />
-                                <div>
-                                    <h3 style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>Ops-Managed Fulfillment</h3>
-                                    <p style={{ color: "var(--bd-muted)", lineHeight: 1.6, margin: 0 }}>
-                                        Our operations team actively manages transactions, coordinating logistics, mediating disputes, and ensuring timely delivery.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bd-card bd-card-pad">
-                            <div style={{ display: "flex", alignItems: "start", gap: 16 }}>
-                                <GlobalIcon size={32} style={{ color: "var(--bd-brand)", flexShrink: 0 }} />
-                                <div>
-                                    <h3 style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>Local + Global</h3>
-                                    <p style={{ color: "var(--bd-muted)", lineHeight: 1.6, margin: 0 }}>
-                                        Buy locally in Nigeria or Bangladesh with full RFQ support, or access global products with Buy Now simplicity.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Our Values */}
-                <section>
-                    <h2 className="bd-h2" style={{ marginBottom: 30 }}>Our Values</h2>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 20 }}>
-                        <div style={{ padding: 20, borderLeft: "4px solid var(--bd-brand)" }}>
-                            <h4 style={{ fontWeight: 900, marginBottom: 8 }}>Trust</h4>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14, lineHeight: 1.6 }}>
-                                We build trust through transparency, escrow protection, and reliable service.
-                            </p>
-                        </div>
-                        <div style={{ padding: 20, borderLeft: "4px solid var(--bd-brand)" }}>
-                            <h4 style={{ fontWeight: 900, marginBottom: 8 }}>Fairness</h4>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14, lineHeight: 1.6 }}>
-                                Both buyers and sellers deserve fair treatment and dispute resolution.
-                            </p>
-                        </div>
-                        <div style={{ padding: 20, borderLeft: "4px solid var(--bd-brand)" }}>
-                            <h4 style={{ fontWeight: 900, marginBottom: 8 }}>Innovation</h4>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14, lineHeight: 1.6 }}>
-                                We continuously improve our platform with new features and better protection.
-                            </p>
-                        </div>
-                        <div style={{ padding: 20, borderLeft: "4px solid var(--bd-brand)" }}>
-                            <h4 style={{ fontWeight: 900, marginBottom: 8 }}>Accessibility</h4>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14, lineHeight: 1.6 }}>
-                                Trade should be accessible to businesses of all sizes, from startups to enterprises.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Join Us CTA */}
-                <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "60px 20px" }}>
-                    <h2 className="bd-h2" style={{ marginBottom: 16 }}>Join the Banadama Community</h2>
-                    <p style={{ color: "var(--bd-muted)", marginBottom: 30, fontSize: 16 }}>
-                        Whether you're buying or selling, Banadama provides the platform and protection you need
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '2rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: '2rem' }}>
+                    <h2 style={{ color: '#2b3d2d', fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>Our Story</h2>
+                    <p style={{ color: '#333', lineHeight: '1.8', marginBottom: '1rem' }}>
+                        Founded in 2025, Banadama was born from a simple observation: traditional B2B marketplaces often fail to protect buyers and sellers adequately. Payment fraud, delayed shipments, and quality issues plague cross-border trade, especially in emerging markets like Nigeria and Bangladesh.
                     </p>
-                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/languages" className="bd-btn bd-btn-primary bd-btn-lg">Get Started</a>
-                        <a href="/marketplace" className="bd-btn bd-btn-lg">Browse Marketplace</a>
-                        <a href="/sell/start" className="bd-btn bd-btn-lg">Start Selling</a>
+                    <p style={{ color: '#333', lineHeight: '1.8' }}>
+                        We set out to change that by building a platform with escrow protection at its core, combined with hands-on operations management to ensure every transaction is completed fairly.
+                    </p>
+                </div>
+
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '2rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                    <h2 style={{ color: '#2b3d2d', fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem' }}>What Makes Us Different</h2>
+                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        <div style={{ borderLeft: '4px solid #5bc5cf', paddingLeft: '1rem' }}>
+                            <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.5rem' }}>Escrow Protection</h3>
+                            <p style={{ color: '#333', margin: 0 }}>Every transaction is protected by our escrow system. Funds are only released after delivery confirmation.</p>
+                        </div>
+                        <div style={{ borderLeft: '4px solid #5bc5cf', paddingLeft: '1rem' }}>
+                            <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.5rem' }}>Ops-Managed Fulfillment</h3>
+                            <p style={{ color: '#333', margin: 0 }}>Our operations team actively manages transactions, coordinating logistics and ensuring timely delivery.</p>
+                        </div>
+                        <div style={{ borderLeft: '4px solid #5bc5cf', paddingLeft: '1rem' }}>
+                            <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.5rem' }}>Local + Global</h3>
+                            <p style={{ color: '#333', margin: 0 }}>Buy locally in Nigeria or Bangladesh or access global products with simplicity.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                {/* CTA */}
+                <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                    <a href="/marketplace" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500 }}>Back to Marketplace</a>
+                </div>
+            </main>
+
+            {/* FOOTER SECTION */}
+            <footer style={{
+                backgroundColor: '#001a4d',
+                color: 'white',
+                padding: '4rem 1rem 2rem',
+                borderTop: '2px solid white',
+                marginTop: '4rem'
+            }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                        gap: '2rem',
+                        marginBottom: '2rem'
+                    }}>
+                        {/* About Column */}
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>About</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                <li><a href="/about" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>About Us</a></li>
+                                <li><a href="/blog" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Blog</a></li>
+                                <li><a href="/careers" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Careers</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Support Column */}
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>Support</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                <li><a href="/help" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Help Center</a></li>
+                                <li><a href="/contact" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Contact Us</a></li>
+                                <li><a href="/safety" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Safety Tips</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Legal Column */}
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>Legal</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                <li><a href="/terms" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Terms</a></li>
+                                <li><a href="/privacy" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Privacy</a></li>
+                                <li><a href="/cookies" style={{ color: 'white', textDecoration: 'none', fontSize: '0.875rem', transition: 'opacity 0.2s', display: 'block', marginBottom: '0.5rem' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>Cookies</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Follow Us Column */}
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>Follow Us</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', gap: '1rem' }}>
+                                <li>
+                                    <a href="https://twitter.com/banadama" target="_blank" rel="noopener noreferrer" style={{ color: 'white', textDecoration: 'none', fontSize: '1rem', transition: 'opacity 0.2s', display: 'inline-block' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://linkedin.com/company/banadama" target="_blank" rel="noopener noreferrer" style={{ color: 'white', textDecoration: 'none', fontSize: '1rem', transition: 'opacity 0.2s', display: 'inline-block' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" fill="currentColor"/>
+                                            <circle cx="4" cy="4" r="2" fill="currentColor"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://instagram.com/banadama" target="_blank" rel="noopener noreferrer" style={{ color: 'white', textDecoration: 'none', fontSize: '1rem', transition: 'opacity 0.2s', display: 'inline-block' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="currentColor"/>
+                                            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Copyright */}
+                    <div style={{
+                        textAlign: 'center',
+                        paddingTop: '2rem',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                        fontSize: '0.75rem',
+                        color: 'rgba(255, 255, 255, 0.9)'
+                    }}>
+                        <p style={{ margin: 0 }}>© 2025 Banadama. All rights reserved. Secure trading platform for Nigeria, Bangladesh & Global markets.</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

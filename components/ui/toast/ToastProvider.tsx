@@ -1,119 +1,73 @@
-// components/ui/toast/ToastProvider.tsx - Toast Notification System
 "use client";
 
-import * as React from "react";
-import { Icons } from "@/components/icons/icons";
+import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import clsx from "clsx";
 
 type ToastType = "success" | "error" | "info" | "warning";
 
-export type Toast = {
+interface Toast {
     id: string;
+    message: string;
     type: ToastType;
-    title: string;
-    message?: string;
-    ttl?: number; // ms
-};
-
-type ToastCtx = {
-    push: (t: Omit<Toast, "id">) => void;
-    clear: (id: string) => void;
-};
-
-const Ctx = React.createContext<ToastCtx | null>(null);
-
-function iconFor(type: ToastType) {
-    switch (type) {
-        case "success":
-            return <Icons.Check size={18} />;
-        case "error":
-            return <Icons.X size={18} />;
-        case "warning":
-            return <Icons.Warning size={18} />;
-        default:
-            return <Icons.Message size={18} />;
-    }
 }
 
-function tone(type: ToastType) {
-    switch (type) {
-        case "success":
-            return "var(--bd-success)";
-        case "error":
-            return "var(--bd-danger)";
-        case "warning":
-            return "var(--bd-warning)";
-        default:
-            return "var(--bd-border)";
-    }
+interface ToastContextType {
+    showToast: (message: string, type?: ToastType) => void;
 }
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
-    const [toasts, setToasts] = React.useState<Toast[]>([]);
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-    const clear = React.useCallback((id: string) => {
-        setToasts((t) => t.filter((x) => x.id !== id));
+export function ToastProvider({ children }: { children: ReactNode }) {
+    const [toasts, setToasts] = useState<Toast[]>([]);
+
+    const showToast = useCallback((message: string, type: ToastType = "info") => {
+        const id = Math.random().toString(36).substring(2, 9);
+        setToasts((prev) => [...prev, { id, message, type }]);
+
+        setTimeout(() => {
+            setToasts((prev) => prev.filter((t) => t.id !== id));
+        }, 5000);
     }, []);
 
-    const push = React.useCallback((t: Omit<Toast, "id">) => {
-        const id = crypto.randomUUID();
-        const ttl = t.ttl ?? 3500;
-
-        const toast: Toast = { id, ...t, ttl };
-        setToasts((prev) => [toast, ...prev].slice(0, 4));
-
-        window.setTimeout(() => clear(id), ttl);
-    }, [clear]);
-
     return (
-        <Ctx.Provider value={{ push, clear }}>
+        <ToastContext.Provider value={{ showToast }}>
             {children}
-
-            {/* Toast stack */}
-            <div
-                style={{
-                    position: "fixed",
-                    right: 14,
-                    bottom: 14,
-                    display: "grid",
-                    gap: 10,
-                    zIndex: 60,
-                    width: "min(420px, calc(100vw - 28px))",
-                }}
-            >
-                {toasts.map((t) => (
-                    <div
-                        key={t.id}
-                        className="bd-card bd-card-pad"
-                        style={{
-                            boxShadow: "var(--bd-shadow)",
-                            borderLeft: `3px solid ${tone(t.type)}`,
-                            display: "grid",
-                            gap: 6,
-                            animation: "slideIn 0.2s ease-out",
-                        }}
-                        role="status"
-                        aria-live="polite"
-                    >
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
-                            <div style={{ display: "flex", gap: 8, alignItems: "center", fontWeight: 950 }}>
-                                <span style={{ display: "grid", placeItems: "center", color: tone(t.type) }}>{iconFor(t.type)}</span>
-                                <span>{t.title}</span>
-                            </div>
-                            <button className="bd-btn" onClick={() => clear(t.id)} style={{ height: 34, padding: "0 8px" }}>
-                                <Icons.X size={16} />
+            <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+                <AnimatePresence>
+                    {toasts.map((toast) => (
+                        <motion.div
+                            key={toast.id}
+                            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                            className={clsx(
+                                "pointer-events-auto flex min-w-[300px] items-center justify-between rounded-xl p-4 shadow-lg backdrop-blur-xl border",
+                                toast.type === "success" && "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
+                                toast.type === "error" && "border-red-500/20 bg-red-500/10 text-red-400",
+                                toast.type === "warning" && "border-amber-500/20 bg-amber-500/10 text-amber-400",
+                                toast.type === "info" && "border-blue-500/20 bg-blue-500/10 text-blue-400"
+                            )}
+                        >
+                            <span className="text-sm font-medium">{toast.message}</span>
+                            <button
+                                onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                                className="ml-4 opacity-50 hover:opacity-100 transition-opacity"
+                            >
+                                ✕
                             </button>
-                        </div>
-
-                        {t.message ? <div style={{ color: "var(--bd-muted)", lineHeight: 1.5, fontSize: 14 }}>{t.message}</div> : null}
-                    </div>
-                ))}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </div>
-        </Ctx.Provider>
+        </ToastContext.Provider>
     );
 }
 
 export function useToast() {
-    const ctx = React.useContext(Ctx);
-    if (!ctx) throw new Error("useToast must be used within ToastProvider");
-    return ctx;
+    const context = useContext(ToastContext);
+    if (!context) {
+        throw new Error("useToast must be used within a ToastProvider");
+    }
+    return context;
 }

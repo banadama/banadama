@@ -1,7 +1,12 @@
 import { ProductCard } from "@/components/marketplace/ProductCard";
 import { CreatorListingCard } from "@/components/creators/CreatorListingCard";
+import { SupplierCard } from "@/components/marketplace/SupplierCard";
 
 export function UnifiedMarketCard({ item, from }: { item: any; from: "marketplace" | "near-me" | "global" }) {
+    if (item.kind === "SUPPLIER") {
+        return <SupplierCard supplier={item} />;
+    }
+
     if (item.kind === "CREATOR_DIGITAL") {
         return (
             <CreatorListingCard
@@ -25,7 +30,6 @@ export function UnifiedMarketCard({ item, from }: { item: any; from: "marketplac
     return (
         <ProductCard
             product={item}
-            context="MARKETPLACE"
             detailHref={`/marketplace/products/${item.id}?from=${from}`}
         />
     );

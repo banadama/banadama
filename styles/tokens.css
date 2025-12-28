@@ -1,24 +1,32 @@
-/* styles/tokens.css - BANADAMA DESIGN TOKENS (LOCKED - DARK MODE) */
+/* styles/tokens.css - BANADAMA DESIGN TOKENS V2 (LIQUID GLASS + ORANGE GLOW) */
 
 :root {
     /* Surfaces */
-    --bd-bg: #0b0c10;
-    --bd-surface: #0f1117;
-    --bd-card: #121526;
+    --bd-bg: #020617;
+    /* Slate-950 */
+    --bd-surface: #0f172a;
+    /* Slate-900 */
+    --bd-card: rgba(255, 255, 255, 0.03);
+    /* Liquid Glass Base */
     --bd-border: rgba(255, 255, 255, 0.08);
+    /* Transparent Border */
+    --bd-glass-border: rgba(255, 255, 255, 0.12);
+    --bd-glass-blur: 12px;
 
     /* Text */
-    --bd-text: rgba(255, 255, 255, 0.92);
-    --bd-fg: rgba(255, 255, 255, 0.92);
-    --bd-muted: rgba(255, 255, 255, 0.68);
+    --bd-text: #f8fafc;
+    /* Slate-50 */
+    --bd-fg: #f8fafc;
+    --bd-muted: #94a3b8;
+    /* Slate-400 */
 
-    /* Primary */
-    --bd-primary: #ffffff;
-    --bd-primaryText: #0b0c10;
-
-    /* Brand accents */
-    --bd-brand: 152 60% 40%;
-    --bd-brand-2: 210 90% 55%;
+    /* Brand accents (Orange Glow) */
+    --bd-accent: #f97316;
+    /* Orange-500 */
+    --bd-accent-hover: #fb923c;
+    /* Orange-400 */
+    --bd-accent-glow: rgba(249, 115, 22, 0.4);
+    --bd-accent-glow-strong: rgba(249, 115, 22, 0.6);
 
     /* Status */
     --bd-danger: #ef4444;
@@ -26,29 +34,29 @@
     --bd-warning: #f59e0b;
 
     /* Radius */
-    --bd-r-sm: 10px;
-    --bd-r-md: 14px;
-    --bd-r-lg: 16px;
-    --bd-radius: 16px;
-    --bd-radius-sm: 10px;
+    --bd-r-sm: 8px;
+    --bd-r-md: 12px;
+    --bd-r-lg: 20px;
+    --bd-radius: 20px;
+    --bd-radius-sm: 8px;
 
     /* Shadows */
-    --bd-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    --bd-shadow2: 0 14px 50px rgba(0, 0, 0, 0.45);
+    --bd-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --bd-shadow-glow: 0 0 20px var(--bd-accent-glow);
 
     /* Spacing */
-    --bd-gap: 12px;
+    --bd-gap: 16px;
     --bd-gap-sm: 8px;
-    --bd-gap-lg: 24px;
-    --bd-pad: 14px;
-    --bd-pad-sm: 10px;
-    --bd-pad-lg: 20px;
+    --bd-gap-lg: 32px;
+    --bd-pad: 16px;
+    --bd-pad-sm: 8px;
+    --bd-pad-lg: 32px;
 
     /* Button/Input heights */
-    --bd-btn-height: 42px;
-    --bd-btn-height-sm: 34px;
-    --bd-input-height: 42px;
+    --bd-btn-height: 44px;
+    --bd-btn-height-sm: 36px;
+    --bd-input-height: 44px;
 
     /* Grid */
-    --bd-content-max: 1280px;
+    --bd-content-max: 1400px;
 }

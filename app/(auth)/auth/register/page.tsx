@@ -1,17 +1,14 @@
-// app/(auth)/auth/register/page.tsx - Registration Page
-import { getCurrentUser, getRoleDashboard } from "@/lib/auth";
+// app/(auth)/auth/register/page.tsx - Redirects to home (using modal)
 import { redirect } from "next/navigation";
-import { RegisterForm } from "@/components/auth/RegisterForm";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function RegisterPage() {
   const user = await getCurrentUser();
+  // If user is logged in, redirect to their dashboard
   if (user) {
-    redirect(getRoleDashboard(user.role));
+    redirect("/buyer/dashboard");
   }
-
-  return (
-    <div className="bd-container flex items-center justify-center min-h-screen py-10">
-      <RegisterForm />
-    </div>
-  );
+  // Redirect to home where registration is available as modal
+  redirect("/");
 }
+

@@ -99,7 +99,8 @@ export async function getMarketplaceProducts(filters: ProductFilters): Promise<P
         FROM products p
         LEFT JOIN supplier_profiles sp ON p.supplier_id = sp.id
         WHERE p.status = 'ACTIVE'
-          AND (p.listing_type IS NULL OR p.listing_type = 'product')
+          -- Enforce canonical listing type: treat NULL as 'product'
+          AND COALESCE(p.listing_type, 'product') = 'product'
     `;
 
     const params: any[] = [];
@@ -242,6 +243,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       FROM products p
       LEFT JOIN supplier_profiles sp ON p.supplier_id = sp.id
       WHERE p.id = $1::uuid AND p.status = 'ACTIVE'
+        AND COALESCE(p.listing_type, 'product') = 'product'
     `;
 
     const results = await (db as any).query(query, [id]);

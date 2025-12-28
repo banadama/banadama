@@ -104,118 +104,35 @@ export default function HelpCenterPage() {
     ];
 
     return (
-        <div className="bd-container bd-page">
-            {/* Hero Section */}
-            <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "60px 20px" }}>
-                <HelpCircleIcon size={64} style={{ margin: "0 auto 20px", opacity: 0.8 }} />
-                <h1 className="bd-h1" style={{ fontSize: 36, marginBottom: 12 }}>Help Center</h1>
-                <p className="bd-p" style={{ fontSize: 18, maxWidth: 600, margin: "0 auto 30px" }}>
-                    Find answers to common questions and get support
-                </p>
-
-                {/* Search Bar */}
-                <div style={{ maxWidth: 600, margin: "0 auto" }}>
-                    <div className="bd-input" style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px" }}>
-                        <SearchIcon size={20} style={{ opacity: 0.5 }} />
-                        <input
-                            type="text"
-                            placeholder="Search for help..."
-                            style={{
-                                flex: 1,
-                                background: "transparent",
-                                border: "none",
-                                outline: "none",
-                                fontSize: 16,
-                                color: "var(--bd-text)"
-                            }}
-                        />
-                    </div>
+        <div style={{ backgroundColor: '#5bc5cf', minHeight: '100vh' }}>
+            <header style={{ backgroundColor: '#2b3d2d', padding: '1rem 0', borderBottom: '2px solid white' }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+                    <h1 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>Help Center</h1>
+                    <p style={{ color: 'white', opacity: 0.9, margin: '0.5rem 0 0 0' }}>Find answers to your questions</p>
                 </div>
-            </div>
+            </header>
 
-            {/* Quick Links */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 20, marginTop: 40 }}>
-                <a href="/help#contact" className="bd-card bd-card-pad" style={{ textDecoration: "none", color: "inherit", transition: "transform 0.2s", cursor: "pointer" }}>
-                    <MessageCircleIcon size={32} style={{ marginBottom: 12, color: "var(--bd-brand)" }} />
-                    <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>Contact Support</div>
-                    <div style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                        Get help from our support team
-                    </div>
-                </a>
-
-                <a href="/help#guides" className="bd-card bd-card-pad" style={{ textDecoration: "none", color: "inherit", transition: "transform 0.2s", cursor: "pointer" }}>
-                    <BookIcon size={32} style={{ marginBottom: 12, color: "var(--bd-brand)" }} />
-                    <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>User Guides</div>
-                    <div style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                        Step-by-step tutorials and guides
-                    </div>
-                </a>
-
-                <a href="/help#trust" className="bd-card bd-card-pad" style={{ textDecoration: "none", color: "inherit", transition: "transform 0.2s", cursor: "pointer" }}>
-                    <ShieldIcon size={32} style={{ marginBottom: 12, color: "var(--bd-brand)" }} />
-                    <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 8 }}>Trust & Safety</div>
-                    <div style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                        Learn about our security measures
-                    </div>
-                </a>
-            </div>
-
-            {/* FAQ Sections */}
-            <div style={{ marginTop: 60 }}>
-                <h2 className="bd-h2" style={{ marginBottom: 30 }}>Frequently Asked Questions</h2>
-
-                <div style={{ display: "grid", gap: 40 }}>
+            <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1rem' }}>
+                <div style={{ display: 'grid', gap: '2rem' }}>
                     {faqs.map((section, idx) => (
-                        <div key={idx}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                                <div style={{ fontWeight: 900, fontSize: 22 }}>{section.category}</div>
-                            </div>
-
-                            <div style={{ display: "grid", gap: 16 }}>
-                                {section.questions.map((item, qIdx) => (
-                                    <div key={qIdx} className="bd-card bd-card-pad">
-                                        <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 8 }}>
-                                            {item.q}
-                                        </div>
-                                        <div style={{ color: "var(--bd-muted)", lineHeight: 1.6 }}>
-                                            {item.a}
-                                        </div>
+                        <div key={idx} style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '2rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                            <h2 style={{ color: '#2b3d2d', fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>{section.category}</h2>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {section.questions.map((qa, i) => (
+                                    <div key={i} style={{ paddingBottom: '1rem', borderBottom: i < section.questions.length - 1 ? '1px solid #e0e0e0' : 'none' }}>
+                                        <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1rem' }}>{qa.q}</h3>
+                                        <p style={{ color: '#666', lineHeight: '1.6', margin: 0 }}>{qa.a}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
-
-            {/* Contact Section */}
-            <div id="contact" className="bd-card bd-card-pad" style={{ marginTop: 60, background: "var(--bd-muted-bg)", padding: "40px" }}>
-                <h3 className="bd-h3" style={{ marginBottom: 20, textAlign: "center" }}>Still Need Help?</h3>
-                <p style={{ color: "var(--bd-muted)", textAlign: "center", marginBottom: 30 }}>
-                    Our support team is here to help you
-                </p>
-
-                <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                    <a className="bd-btn bd-btn-primary" href="mailto:support@banadama.com">
-                        <MessageCircleIcon size={18} /> Email Support
-                    </a>
-                    <a className="bd-btn" href="/marketplace">
-                        <PackageIcon size={18} /> Browse Marketplace
-                    </a>
+                <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                    <a href="/contact" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500, marginRight: '1rem' }}>Contact Us</a>
+                    <a href="/marketplace" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500 }}>Back to Marketplace</a>
                 </div>
-            </div>
-
-            {/* Additional Resources */}
-            <div style={{ marginTop: 40, textAlign: "center", padding: "20px" }}>
-                <div style={{ color: "var(--bd-muted)", marginBottom: 12 }}>More Resources</div>
-                <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-                    <a href="/terms" style={{ color: "var(--bd-brand)" }}>Terms of Service</a>
-                    <span style={{ color: "var(--bd-muted)" }}>•</span>
-                    <a href="/privacy" style={{ color: "var(--bd-brand)" }}>Privacy Policy</a>
-                    <span style={{ color: "var(--bd-muted)" }}>•</span>
-                    <a href="/marketplace" style={{ color: "var(--bd-brand)" }}>Marketplace</a>
-                </div>
-            </div>
+            </main>
         </div>
     );
 }

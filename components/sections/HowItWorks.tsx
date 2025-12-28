@@ -1,4 +1,4 @@
-// components/sections/HowItWorks.tsx
+// components/sections/HowItWorks.tsx - VERSION 2 (LIQUID GLASS)
 import { Card, CardBody } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 
@@ -27,38 +27,23 @@ const steps = [
 
 export function HowItWorks() {
     return (
-        <section className="bd-container" style={{ padding: "0 16px 40px" }}>
-            <div className="bd-grid" style={{ gap: 24 }}>
-                <div className="bd-h2" style={{ textAlign: "center" }}>
+        <section className="py-20 px-4">
+            <div className="max-w-7xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
                     How It Works
-                </div>
-                <div
-                    className="bd-grid"
-                    style={{
-                        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                        gap: 16,
-                    }}
-                >
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {steps.map((s) => (
-                        <Card key={s.step}>
-                            <CardBody className="bd-grid" style={{ gap: 12 }}>
-                                <div className="bd-row">
-                                    <Badge
-                                        style={{
-                                            width: 32,
-                                            height: 32,
-                                            borderRadius: "50%",
-                                            justifyContent: "center",
-                                            background: "hsl(var(--bd-brand))",
-                                            color: "white",
-                                            border: "none",
-                                        }}
-                                    >
+                        <Card key={s.step} className="border-white/5 bg-white/[0.01]">
+                            <CardBody className="flex flex-col gap-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-500 text-black font-black shadow-[0_0_15px_rgba(249,115,22,0.4)]">
                                         {s.step}
-                                    </Badge>
-                                    <div style={{ fontWeight: 800 }}>{s.title}</div>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white tracking-tight">{s.title}</h3>
                                 </div>
-                                <div className="bd-p">{s.desc}</div>
+                                <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
                             </CardBody>
                         </Card>
                     ))}
@@ -67,3 +52,4 @@ export function HowItWorks() {
         </section>
     );
 }
+

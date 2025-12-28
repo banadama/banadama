@@ -70,197 +70,42 @@ export default function CareersPage() {
         }
     ];
 
-    const filteredJobs = selectedDepartment === "all"
-        ? jobOpenings
-        : jobOpenings.filter(job => job.department === selectedDepartment);
-
     return (
-        <div className="bd-container bd-page">
-            <div className="bd-card bd-card-pad" style={{ background: "linear-gradient(135deg, var(--bd-brand) 0%, #f97316 100%)", textAlign: "center", padding: "80px 20px" }}>
-                <BriefcaseIcon size={64} style={{ margin: "0 auto 20px", color: "white" }} />
-                <h1 className="bd-h1" style={{ fontSize: 42, marginBottom: 12, color: "white" }}>Careers at Banadama</h1>
-                <p style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: 20, maxWidth: 700, margin: "0 auto" }}>
-                    Join us in building the future of B2B trade in emerging markets
-                </p>
-            </div>
-
-            <div style={{ maxWidth: 1000, margin: "60px auto", display: "grid", gap: 60 }}>
-                {/* Why Join Us */}
-                <section>
-                    <h2 className="bd-h2" style={{ textAlign: "center", marginBottom: 40 }}>Why Join Banadama?</h2>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 24 }}>
-                        <div className="bd-card bd-card-pad" style={{ textAlign: "center" }}>
-                            <RocketIcon size={48} style={{ margin: "0 auto 12px", color: "var(--bd-brand)" }} />
-                            <h3 style={{ fontWeight: 900, marginBottom: 8 }}>High Impact</h3>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                                Shape a platform used by thousands of businesses daily
-                            </p>
-                        </div>
-
-                        <div className="bd-card bd-card-pad" style={{ textAlign: "center" }}>
-                            <GlobeIcon size={48} style={{ margin: "0 auto 12px", color: "var(--bd-brand)" }} />
-                            <h3 style={{ fontWeight: 900, marginBottom: 8 }}>Global Reach</h3>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                                Work on products that connect Nigeria, Bangladesh, and the world
-                            </p>
-                        </div>
-
-                        <div className="bd-card bd-card-pad" style={{ textAlign: "center" }}>
-                            <TrendingUpIcon size={48} style={{ margin: "0 auto 12px", color: "var(--bd-brand)" }} />
-                            <h3 style={{ fontWeight: 900, marginBottom: 8 }}>Fast Growth</h3>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                                Grow your career in a rapidly expanding startup
-                            </p>
-                        </div>
-
-                        <div className="bd-card bd-card-pad" style={{ textAlign: "center" }}>
-                            <LightbulbIcon size={48} style={{ margin: "0 auto 12px", color: "var(--bd-brand)" }} />
-                            <h3 style={{ fontWeight: 900, marginBottom: 8 }}>Innovation</h3>
-                            <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>
-                                Solve challenging problems with cutting-edge technology
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Perks & Benefits */}
-                <section>
-                    <h2 className="bd-h2" style={{ marginBottom: 20 }}>Perks & Benefits</h2>
-                    <div className="bd-card bd-card-pad">
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <DollarIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Competitive Salary
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Market-rate compensation with equity options</p>
-                            </div>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <HeartIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Health Insurance
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Comprehensive medical coverage for you and family</p>
-                            </div>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <HomeIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Remote Work
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Flexible work arrangements and home office stipend</p>
-                            </div>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <BookIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Learning Budget
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Annual budget for courses, books, and conferences</p>
-                            </div>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <CalendarIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Paid Time Off
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Generous vacation days plus public holidays</p>
-                            </div>
-                            <div>
-                                <h4 style={{ fontWeight: 900, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                                    <HeartIcon size={20} style={{ color: "var(--bd-brand)" }} />
-                                    Parental Leave
-                                </h4>
-                                <p style={{ color: "var(--bd-muted)", fontSize: 14 }}>Paid leave for new parents</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Open Positions */}
-                <section>
-                    <h2 className="bd-h2" style={{ marginBottom: 30 }}>Open Positions</h2>
-
-                    {/* Filter */}
-                    <div style={{ marginBottom: 30, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                        <button
-                            className={selectedDepartment === "all" ? "bd-btn bd-btn-primary" : "bd-btn"}
-                            onClick={() => setSelectedDepartment("all")}
-                        >
-                            All Departments
-                        </button>
-                        <button
-                            className={selectedDepartment === "Engineering" ? "bd-btn bd-btn-primary" : "bd-btn"}
-                            onClick={() => setSelectedDepartment("Engineering")}
-                        >
-                            Engineering
-                        </button>
-                        <button
-                            className={selectedDepartment === "Operations" ? "bd-btn bd-btn-primary" : "bd-btn"}
-                            onClick={() => setSelectedDepartment("Operations")}
-                        >
-                            Operations
-                        </button>
-                        <button
-                            className={selectedDepartment === "Sales" ? "bd-btn bd-btn-primary" : "bd-btn"}
-                            onClick={() => setSelectedDepartment("Sales")}
-                        >
-                            Sales
-                        </button>
-                        <button
-                            className={selectedDepartment === "Marketing" ? "bd-btn bd-btn-primary" : "bd-btn"}
-                            onClick={() => setSelectedDepartment("Marketing")}
-                        >
-                            Marketing
-                        </button>
-                    </div>
-
-                    {/* Jobs List */}
-                    <div style={{ display: "grid", gap: 16 }}>
-                        {filteredJobs.map((job) => (
-                            <div key={job.id} className="bd-card bd-card-pad" style={{ cursor: "pointer" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 20, flexWrap: "wrap" }}>
-                                    <div style={{ flex: 1 }}>
-                                        <h3 style={{ fontWeight: 900, fontSize: 20, marginBottom: 8 }}>{job.title}</h3>
-                                        <p style={{ color: "var(--bd-muted)", marginBottom: 12 }}>{job.description}</p>
-                                        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, color: "var(--bd-muted)" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                                <UsersIcon size={14} />
-                                                <span>{job.department}</span>
-                                            </div>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                                <MapPinIcon size={14} />
-                                                <span>{job.location}</span>
-                                            </div>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                                <ClockIcon size={14} />
-                                                <span>{job.type}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button className="bd-btn bd-btn-primary">
-                                        Apply Now
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {filteredJobs.length === 0 && (
-                        <div className="bd-card bd-card-pad" style={{ textAlign: "center", padding: "40px 20px" }}>
-                            <p style={{ color: "var(--bd-muted)" }}>No openings in this department at the moment.</p>
-                        </div>
-                    )}
-                </section>
-
-                {/* Don't See a Fit */}
-                <div className="bd-card bd-card-pad" style={{ background: "var(--bd-muted-bg)", textAlign: "center", padding: "40px 20px" }}>
-                    <h3 style={{ fontWeight: 900, marginBottom: 12 }}>Don't See a Perfect Fit?</h3>
-                    <p style={{ color: "var(--bd-muted)", marginBottom: 24 }}>
-                        We're always looking for talented people. Send us your resume and tell us why you want to join Banadama.
-                    </p>
-                    <a href="mailto:careers@banadama.com" className="bd-btn bd-btn-primary">
-                        careers@banadama.com
-                    </a>
+        <div style={{ backgroundColor: '#5bc5cf', minHeight: '100vh' }}>
+            <header style={{ backgroundColor: '#2b3d2d', padding: '1rem 0', borderBottom: '2px solid white' }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+                    <h1 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>Careers at Banadama</h1>
                 </div>
-            </div>
+            </header>
+            <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1rem' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '2rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: '2rem' }}>
+                    <h2 style={{ color: '#2b3d2d', fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>Join Our Growing Team</h2>
+                    <p style={{ color: '#333', lineHeight: '1.8', marginBottom: '2rem' }}>
+                        We're building the future of B2B trade in emerging markets. Join us in making cross-border trade safer, more transparent, and accessible to everyone.
+                    </p>
+                    <div style={{ marginBottom: '2rem' }}>
+                        <h3 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '1rem' }}>Open Positions</h3>
+                        <div style={{ display: 'grid', gap: '1rem' }}>
+                            {jobOpenings.map(job => (
+                                <div key={job.id} style={{ padding: '1rem', border: '1px solid #e0e0e0', borderRadius: '0.375rem' }}>
+                                    <h4 style={{ color: '#2b3d2d', fontWeight: 700, marginBottom: '0.5rem' }}>{job.title}</h4>
+                                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: '#666', marginBottom: '0.5rem' }}>
+                                        <span>{job.location}</span>
+                                        <span>{job.type}</span>
+                                    </div>
+                                    <button style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}>View Details</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div style={{ marginTop: '2rem' }}>
+                        <a href="mailto:careers@banadama.com" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500 }}>Apply Now</a>
+                    </div>
+                </div>
+                <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                    <a href="/marketplace" style={{ backgroundColor: '#5bc5cf', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 500 }}>Back to Marketplace</a>
+                </div>
+            </main>
         </div>
     );
 }

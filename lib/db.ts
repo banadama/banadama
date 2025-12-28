@@ -1,60 +1,41 @@
-// lib/db.ts - Lazy Prisma Client with Dynamic Import
-// This prevents Prisma from being loaded during Next.js static analysis
+// lib/db.ts - Prisma Client with Raw Query Support
 
-let _prismaInstance: any = null;
-let _prismaPromise: Promise<any> | null = null;
+import { PrismaClient } from '@prisma/client';
 
-async function initPrisma() {
-    if (_prismaInstance) return _prismaInstance;
+let prismaInstance: PrismaClient | null = null;
 
-    if (!_prismaPromise) {
-        _prismaPromise = import('@prisma/client').then(({ PrismaClient }) => {
-            const globalForPrisma = global as unknown as { prisma: any };
-
-            _prismaInstance = globalForPrisma.prisma || new PrismaClient({
-                log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-            });
-
-            if (process.env.NODE_ENV !== 'production') {
-                globalForPrisma.prisma = _prismaInstance;
-            }
-
-            return _prismaInstance;
+function getPrismaInstance(): PrismaClient {
+    if (!prismaInstance) {
+        prismaInstance = new PrismaClient({
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
         });
+
+        // Prevent multiple instances in development
+        if (process.env.NODE_ENV !== 'production') {
+            const globalForPrisma = global as unknown as { prisma: PrismaClient };
+            globalForPrisma.prisma = prismaInstance;
+        }
     }
 
-    return _prismaPromise;
+    return prismaInstance;
 }
 
-// Create a proxy that initializes Prisma on first access
-function createLazyProxy() {
-    return new Proxy({} as any, {
-        get: (target, prop) => {
-            // Return a function that will initialize and call the method
-            if (typeof prop === 'string') {
-                // For model properties (user, account, etc.), return a proxy for the model
-                return new Proxy({} as any, {
-                    get: (modelTarget, modelProp) => {
-                        return async (...args: any[]) => {
-                            const client = await initPrisma();
-                            const model = (client as any)[prop];
-                            if (model && typeof model[modelProp] === 'function') {
-                                return model[modelProp](...args);
-                            }
-                            return model?.[modelProp];
-                        };
-                    }
-                });
-            }
-            return undefined;
-        }
-    });
-}
+// Create a wrapper that adds the query method
+const dbClient = getPrismaInstance() as any;
 
-export const db = createLazyProxy();
-export const prisma = db;
+// Add query method for backward compatibility with raw SQL queries
+dbClient.query = async function(sql: string, params: any[] = []) {
+    // Convert numbered parameters ($1, $2, etc.) to Prisma format
+    let query = sql;
+    const values = [];
+    
+    for (const param of params) {
+        values.push(param);
+    }
+    
+    // Use $queryRawUnsafe for backward compatibility
+    return this.$queryRawUnsafe(query, ...values);
+};
 
-// Export a getter for direct access when needed
-export async function getDb() {
-    return initPrisma();
-}
+export const db = dbClient;
+export const prisma = dbClient;

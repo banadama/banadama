@@ -1,5 +1,6 @@
 import { Icons } from "@/components/icons/icons";
-import { VerificationTick } from "@/components/trust/VerificationTick";
+import { VerificationBadge, VerificationLevel } from "../verification/VerificationBadge";
+import { Badge } from "../ui/Badge";
 
 export function TagRow({
     categoryLabel,
@@ -10,37 +11,42 @@ export function TagRow({
 }: {
     categoryLabel?: string | null;
     supplierName?: string | null;
-    supplierTick?: "NONE" | "GREEN_TICK" | "BLUE_TICK";
+    supplierTick?: "NONE" | "GREEN_TICK" | "BLUE_TICK" | "GOLD_TICK";
     supplierCity?: string | null;
     supplierState?: string | null;
 }) {
-    const TagIcon = Icons.get("Tag");
-    const UsersIcon = Icons.get("Users");
-    const MapPinIcon = Icons.get("MapPin");
+    // Map legacy tick names to new VerificationLevel
+    const mapTickToLevel = (tick: string): VerificationLevel => {
+        if (tick === "BLUE_TICK") return "IDENTITY";
+        if (tick === "GREEN_TICK") return "BUSINESS";
+        if (tick === "GOLD_TICK") return "PREMIUM";
+        return "NONE";
+    };
+
+    const level = mapTickToLevel(supplierTick || "NONE");
 
     return (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
-            {categoryLabel ? (
-                <span className="bd-badge">
-                    <TagIcon size={14} /> {categoryLabel}
+        <div className="flex flex-wrap gap-x-2 gap-y-1 mt-0.5">
+            {categoryLabel && (
+                <span className="text-[11px] text-[#007185] hover:text-[#C45500] cursor-pointer">
+                    {categoryLabel}
                 </span>
-            ) : null}
+            )}
 
-            {supplierName ? (
-                <span className="bd-badge" style={{ gap: 8, maxWidth: "100%" }}>
-                    <UsersIcon size={14} />
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{supplierName}</span>
-                    <VerificationTick level={supplierTick ?? "NONE"} />
-                </span>
-            ) : null}
+            {supplierName && (
+                <div className="flex items-center gap-1">
+                    <span className="text-[11px] text-gray-600 truncate">by {supplierName}</span>
+                    <VerificationBadge level={level} />
+                </div>
+            )}
 
-            {(supplierCity || supplierState) ? (
-                <span className="bd-badge">
-                    <MapPinIcon size={14} />
-                    {supplierCity ? `${supplierCity}` : ""}
-                    {supplierState ? (supplierCity ? `, ${supplierState}` : supplierState) : ""}
+            {(supplierCity || supplierState) && (
+                <span className="text-[11px] text-gray-500">
+                    ({supplierCity || ""}{supplierCity && supplierState ? ", " : ""}{supplierState || ""})
                 </span>
-            ) : null}
+            )}
         </div>
+
     );
 }
+

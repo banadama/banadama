@@ -1,4 +1,4 @@
-// components/sections/WhyBanadama.tsx - NO EMOJIS
+// components/sections/WhyBanadama.tsx - VERSION 2 (LIQUID GLASS)
 import { Card, CardBody } from "../ui/Card";
 import { Icons } from "../icons/icons";
 
@@ -9,7 +9,7 @@ const items = [
         desc: "Funds release only after delivery confirmation. Your money stays safe.",
     },
     {
-        icon: <Icons.Shield size={32} />,
+        icon: <Icons.ShieldCheck size={32} />,
         title: "Verified Suppliers",
         desc: "All sellers go through verification before listing. Blue & green ticks.",
     },
@@ -27,24 +27,19 @@ const items = [
 
 export function WhyBanadama() {
     return (
-        <section className="bd-container" style={{ padding: "0 16px 40px" }}>
-            <div className="bd-grid" style={{ gap: 24 }}>
-                <div className="bd-h2" style={{ textAlign: "center" }}>
-                    Why Banadama?
-                </div>
-                <div
-                    className="bd-grid"
-                    style={{
-                        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                        gap: 16,
-                    }}
-                >
+        <section className="py-20 px-4">
+            <div className="max-w-7xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+                    Why Choose Banadama?
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {items.map((it) => (
-                        <Card key={it.title}>
-                            <CardBody className="bd-grid" style={{ gap: 12 }}>
-                                <div style={{ opacity: 0.7 }}>{it.icon}</div>
-                                <div style={{ fontWeight: 800, fontSize: 18 }}>{it.title}</div>
-                                <div className="bd-p">{it.desc}</div>
+                        <Card key={it.title} hoverable className="h-full border-white/5 bg-white/[0.02]">
+                            <CardBody className="flex flex-col gap-4">
+                                <div className="text-orange-500 opacity-80">{it.icon}</div>
+                                <h3 className="text-xl font-bold text-white tracking-tight">{it.title}</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">{it.desc}</p>
                             </CardBody>
                         </Card>
                     ))}
@@ -53,3 +48,4 @@ export function WhyBanadama() {
         </section>
     );
 }
+

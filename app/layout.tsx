@@ -18,7 +18,7 @@ export default function RootLayout({ children }: any) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-screen bg-slate-950 text-slate-100">
+      <body className="min-h-screen bg-slate-950 text-slate-100" suppressHydrationWarning>
         <ToastProvider>
           {children}
         </ToastProvider>

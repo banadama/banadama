@@ -1,178 +1,1929 @@
-// app/marketplace/page.tsx - Main Marketplace Page (Infinite Grid)
-import { apiGet } from "@/lib/api";
-import { MarketplaceFilters } from "@/components/marketplace/MarketplaceFilters";
-import { MarketplaceInfiniteGrid } from "@/components/marketplace/MarketplaceInfiniteGrid";
-import { toQueryString, MarketFilters } from "@/components/marketplace/marketFilters";
-import { getCategoryIndex } from "@/lib/categoriesCache";
-import { Icons } from "@/components/icons/icons";
+'use client';
 
-async function getMarketplaceData(filters: MarketFilters) {
-    try {
-        const qs = toQueryString(filters);
-        const res = await apiGet<any>(`/api/marketplace/feed${qs}`);
-        return res?.data ?? res ?? { items: [], total: 0, hasMore: false, page: 1, limit: 24 };
-    } catch {
-        return { items: [], total: 0, hasMore: false, page: 1, limit: 24 };
-    }
-}
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default async function MarketplacePage({
-    searchParams
-}: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-    const params = await searchParams;
+// SVG Icons - Production Ready (Zero Emojis)
+const HamburgerIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+);
 
-    const filters: MarketFilters = {
-        q: typeof params?.q === "string" ? params.q : undefined,
-        country: (params?.country as any) ?? undefined,
-        category: typeof params?.category === "string" ? params.category : undefined,
-        supplierType: (params?.supplierType as any) ?? "ANY",
-        tick: (params?.tick as any) ?? "ANY",
-        mode: (params?.mode as any) ?? "ANY",
-        sort: (params?.sort as any) ?? "RELEVANCE",
-        page: params?.page ? Number(params.page) : 1,
-        limit: params?.limit ? Number(params.limit) : 24,
-        source: (params?.source as any) ?? "ALL",
+const CloseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="11" cy="11" r="8"></circle>
+    <path d="m21 21-4.35-4.35"></path>
+  </svg>
+);
+
+const CartIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="9" cy="21" r="1"></circle>
+    <circle cx="20" cy="21" r="1"></circle>
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+);
+
+const DeliveryIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <rect x="1" y="3" width="15" height="13"></rect>
+    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+  </svg>
+);
+
+const ChevronDownIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
+
+const StarIcon = ({ filled = false }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <polygon points="12 2 15.09 10.26 23.77 11.25 17.77 17.25 19.16 25.75 12 21.27 4.84 25.75 6.23 17.25 0.23 11.25 8.91 10.26 12 2"></polygon>
+  </svg>
+);
+
+const ShoppingBagIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="9" cy="21" r="1"></circle>
+    <circle cx="20" cy="21" r="1"></circle>
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+  </svg>
+);
+
+// Data
+const CATEGORIES = [
+  { id: 'industrial', label: 'Industrial' },
+  { id: 'retail', label: 'Retail' },
+  { id: 'suppliers', label: 'Suppliers' },
+];
+
+const SAMPLE_PRODUCTS = [
+  {
+    id: 1,
+    name: 'Premium Cotton Fabric',
+    supplier: 'TextileCo Ltd',
+    price: 45.99,
+    rating: 4.8,
+    reviews: 234,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Cotton+Fabric',
+  },
+  {
+    id: 2,
+    name: 'Polyester Blend',
+    supplier: 'FabricHub International',
+    price: 32.50,
+    rating: 4.6,
+    reviews: 156,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Polyester',
+  },
+  {
+    id: 3,
+    name: 'Silk Premium',
+    supplier: 'LuxeTextiles',
+    price: 78.00,
+    rating: 4.9,
+    reviews: 89,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Silk',
+  },
+  {
+    id: 4,
+    name: 'Dyed Materials',
+    supplier: 'PolyMaterial Corp',
+    price: 28.99,
+    rating: 4.5,
+    reviews: 342,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Dyed',
+  },
+  {
+    id: 5,
+    name: 'Organic Linen',
+    supplier: 'EcoFabrics Ltd',
+    price: 56.00,
+    rating: 4.7,
+    reviews: 178,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Linen',
+  },
+  {
+    id: 6,
+    name: 'Stretch Jersey',
+    supplier: 'KnitMasters Pro',
+    price: 42.75,
+    rating: 4.8,
+    reviews: 267,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Jersey',
+  },
+  {
+    id: 7,
+    name: 'Canvas Heavy Duty',
+    supplier: 'IndustrialFab',
+    price: 51.25,
+    rating: 4.6,
+    reviews: 145,
+    category: 'industrial',
+    image: 'https://via.placeholder.com/240x160?text=Canvas',
+  },
+  {
+    id: 8,
+    name: 'Satin Grade A',
+    supplier: 'SatinCo Premium',
+    price: 68.50,
+    rating: 4.9,
+    reviews: 91,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Satin',
+  },
+];
+
+export default function MarketplacePage() {
+  const router = useRouter();
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  // State Management
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [cartCount, setCartCount] = useState(3);
+  const [selectedLocation, setSelectedLocation] = useState('Nigeria');
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [searchCategory, setSearchCategory] = useState('all');
+  const [categorySearchQuery, setCategorySearchQuery] = useState('');
+  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English – EN');
+  const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('NGN - Nigerian Naira');
+  
+  // Cart items state
+  const [cartItems, setCartItems] = useState([
+    { id: 1, name: 'Premium T-Shirt', size: 'M', quantity: 1, price: 5200, image: '' },
+    { id: 2, name: 'Classic Jeans', size: '32', quantity: 1, price: 8500, image: '' },
+    { id: 3, name: 'Leather Shoes', size: '10', quantity: 1, price: 12000, image: '' },
+  ]);
+
+  // Refs for click-outside detection
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const settingsDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(target)) {
+        setShowLocationDropdown(false);
+      }
+      if (accountDropdownRef.current && !accountDropdownRef.current.contains(target)) {
+        setShowAccountDropdown(false);
+      }
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(target)) {
+        setShowCategoryDropdown(false);
+      }
+      if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(target)) {
+        setShowSettingsDropdown(false);
+      }
     };
 
-    const data = await getMarketplaceData(filters);
-    const { page, limit, hasMore } = data;
-    const initialItems = data.items || [];
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    // Enrich with category names
-    const idx = await getCategoryIndex();
-    const items = initialItems.map((p: any) => ({
-        ...p,
-        categoryName: idx.bySlug[p.categorySlug || p.category]?.name ?? (p.categorySlug || p.category),
-    }));
+  // Product Filtering Logic
+  const filteredProducts = SAMPLE_PRODUCTS.filter(product => {
+    const matchCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const matchSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.supplier.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
-    // Key by current query (filters), excluding page
-    const keyParams = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-        if (v && k !== "page") keyParams.set(k, String(v));
-    });
-    const gridKey = keyParams.toString();
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setSidebarOpen(false);
+  };
 
-    const Shield = Icons.get("Shield");
-    const CheckCircle = Icons.get("Check");
-    const Star = Icons.get("Star");
-    const Search = Icons.get("Search");
-
+  const renderStars = (rating: number) => {
     return (
-        <div style={{ background: "var(--bd-bg)" }}>
-            {/* Orange Header */}
-            <div style={{ background: "linear-gradient(135deg, var(--bd-brand) 0%, #f97316 100%)", borderBottom: "none" }}>
-                <div className="bd-container" style={{ padding: "24px 20px" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
-                        <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                                <h1 style={{ fontSize: 32, fontWeight: 900, margin: 0, color: "white" }}>Marketplace</h1>
-                                {data.total && (
-                                    <div style={{ background: "rgba(255, 255, 255, 0.25)", color: "white", padding: "6px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, border: "1px solid rgba(255, 255, 255, 0.3)" }}>
-                                        {data.total.toLocaleString()} products
-                                    </div>
-                                )}
-                            </div>
-                            <div style={{ fontSize: 16, color: "rgba(255, 255, 255, 0.95)" }}>
-                                Discover quality products from verified suppliers worldwide
-                            </div>
-                        </div>
-                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(255, 255, 255, 0.2)", borderRadius: 999, border: "1px solid rgba(255, 255, 255, 0.3)", backdropFilter: "blur(10px)" }}>
-                                <Shield size={18} style={{ color: "white" }} />
-                                <span style={{ fontWeight: 600, fontSize: 14, color: "white" }}>Escrow Protected</span>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(255, 255, 255, 0.2)", borderRadius: 999, border: "1px solid rgba(255, 255, 255, 0.3)", backdropFilter: "blur(10px)" }}>
-                                <CheckCircle size={18} style={{ color: "white" }} />
-                                <span style={{ fontWeight: 600, fontSize: 14, color: "white" }}>Verified Sellers</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Content - Sidebar + Grid */}
-            <div className="bd-container" style={{ padding: "24px 20px" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 30, alignItems: "start" }}>
-
-                    {/* Left Sidebar - Enhanced Filters */}
-                    <aside style={{ position: "sticky", top: 20 }}>
-                        <div style={{ marginBottom: 20 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 12, borderBottom: "2px solid var(--bd-border)" }}>
-                                <Search size={20} style={{ color: "var(--bd-brand)" }} />
-                                <h2 style={{ fontSize: 18, fontWeight: 900, margin: 0 }}>Filters</h2>
-                            </div>
-                        </div>
-
-                        <div style={{
-                            background: "white",
-                            border: "1px solid var(--bd-border)",
-                            borderRadius: 12,
-                            padding: 0,
-                            maxHeight: "calc(100vh - 240px)",
-                            overflowY: "auto",
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)"
-                        }}>
-                            <MarketplaceFilters context="MARKETPLACE" />
-                        </div>
-
-                        {/* Enhanced Trust Info */}
-                        <div style={{
-                            marginTop: 24,
-                            padding: 20,
-                            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)",
-                            border: "1px solid rgba(16, 185, 129, 0.2)",
-                            borderRadius: 12,
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)"
-                        }}>
-                            <div style={{ fontWeight: 900, marginBottom: 16, fontSize: 15 }}>Why shop on Banadama?</div>
-                            <div style={{ display: "grid", gap: 14 }}>
-                                <div style={{ display: "flex", gap: 10, alignItems: "start" }}>
-                                    <div style={{ background: "rgba(16, 185, 129, 0.15)", padding: 8, borderRadius: 8, flexShrink: 0 }}>
-                                        <Shield size={18} style={{ color: "var(--bd-success)", display: "block" }} />
-                                    </div>
-                                    <div>
-                                        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Payment Protection</div>
-                                        <div style={{ color: "var(--bd-muted)", fontSize: 13, lineHeight: 1.4 }}>Secure escrow system holds funds safely</div>
-                                    </div>
-                                </div>
-                                <div style={{ display: "flex", gap: 10, alignItems: "start" }}>
-                                    <div style={{ background: "rgba(16, 185, 129, 0.15)", padding: 8, borderRadius: 8, flexShrink: 0 }}>
-                                        <CheckCircle size={18} style={{ color: "var(--bd-success)", display: "block" }} />
-                                    </div>
-                                    <div>
-                                        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Quality Verified</div>
-                                        <div style={{ color: "var(--bd-muted)", fontSize: 13, lineHeight: 1.4 }}>All suppliers monitored for quality</div>
-                                    </div>
-                                </div>
-                                <div style={{ display: "flex", gap: 10, alignItems: "start" }}>
-                                    <div style={{ background: "rgba(16, 185, 129, 0.15)", padding: 8, borderRadius: 8, flexShrink: 0 }}>
-                                        <Star size={18} style={{ color: "var(--bd-success)", display: "block" }} />
-                                    </div>
-                                    <div>
-                                        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Best Prices</div>
-                                        <div style={{ color: "var(--bd-muted)", fontSize: 13, lineHeight: 1.4 }}>Competitive rates from multiple sellers</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* Right Content - Products Grid */}
-                    <main>
-                        <MarketplaceInfiniteGrid
-                            key={gridKey}
-                            context="MARKETPLACE"
-                            initialItems={items}
-                            initialPage={page}
-                            limit={limit}
-                            initialHasMore={hasMore}
-                        />
-                    </main>
-
-                </div>
-            </div>
-        </div>
+      <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+        {[1, 2, 3, 4, 5].map(star => (
+          <span key={star} style={{ color: star <= Math.round(rating) ? '#ff9800' : '#ddd' }}>
+            <StarIcon filled={star <= Math.round(rating)} />
+          </span>
+        ))}
+        <span style={{ fontSize: '11px', color: '#666', marginLeft: '4px' }}>
+          ({rating})
+        </span>
+      </div>
     );
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#3d5c4f' }}>
+      {/* Sticky Header */}
+      <header
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          backgroundColor: '#3d5c4f',
+          color: 'white',
+          padding: '12px 20px',
+          display: 'flex',
+          gap: '12px',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          maxWidth: '1400px',
+          margin: '0 auto',
+          width: '100%',
+          boxSizing: 'border-box',
+          borderBottom: '2px solid #3d5c4f',
+        }}
+        role="banner"
+      >
+        {/* Hamburger Menu */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '44px',
+            height: '44px',
+            borderRadius: '4px',
+            transition: 'background-color 0.2s ease',
+            minWidth: '44px',
+            minHeight: '44px',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#232f3e')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          aria-label="Toggle sidebar"
+          aria-expanded={sidebarOpen}
+          aria-controls="sidebar"
+        >
+          {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
+        </button>
+        {/* Location Selector */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              transition: 'background-color 0.2s ease',
+              fontSize: '12px',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#232f3e')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            aria-label="Select delivery location"
+            aria-haspopup="listbox"
+            aria-expanded={showLocationDropdown}
+          >
+            <DeliveryIcon />
+            <span>Ship to {selectedLocation}</span>
+            <ChevronDownIcon />
+          </button>
+
+          {/* Location Dropdown */}
+          {showLocationDropdown && (
+            <div
+              ref={locationDropdownRef}
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                backgroundColor: 'white',
+                color: '#333',
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                zIndex: 1000,
+                minWidth: '220px',
+                marginTop: '8px',
+                overflow: 'hidden'
+              }}
+              role="listbox"
+            >
+              {/* Header - Styled like Join Banadama */}
+              <div style={{
+                background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+                padding: '2rem',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 700,
+                  marginBottom: '0.5rem'
+                }}>
+                  Ship to
+                </h3>
+                <p style={{
+                  fontSize: '0.95rem',
+                  color: 'rgba(255,255,255,0.9)'
+                }}>
+                  Select Your Region
+                </p>
+              </div>
+
+              {/* Options */}
+              <div style={{ borderTop: '1px solid #3d5c4f' }}>
+                {['All', 'Nigeria', 'Ghana', 'Kenya', 'South Africa'].map(location => (
+                  <button
+                    key={location}
+                    onClick={() => {
+                      if (location !== 'All') {
+                        setSelectedLocation(location);
+                      }
+                      setShowLocationDropdown(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: 'none',
+                      background: selectedLocation === location ? 'rgba(91, 197, 207, 0.1)' : 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '14px',
+                      fontWeight: selectedLocation === location ? 600 : 500,
+                      color: selectedLocation === location ? '#5bc5cf' : '#333',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={e => {
+                      if (selectedLocation !== location) {
+                        e.currentTarget.style.backgroundColor = '#f5f5f5';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = selectedLocation === location ? 'rgba(91, 197, 207, 0.1)' : 'transparent';
+                    }}
+                    role="option"
+                    aria-selected={selectedLocation === location}
+                  >
+                    {location}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Search Bar with Category Dropdown */}
+        <div
+          style={{
+            display: 'flex',
+            flex: 1,
+            minWidth: '200px',
+            height: '44px',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
+          {/* Category Dropdown in Search */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+              style={{
+                backgroundColor: '#f5f5f5',
+                border: 'none',
+                color: '#333',
+                padding: '0 12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '12px',
+                fontWeight: '500',
+                minWidth: '120px',
+              }}
+              aria-label="Select search category"
+              aria-haspopup="listbox"
+              aria-expanded={showCategoryDropdown}
+            >
+              {CATEGORIES.find(cat => cat.id === searchCategory)?.label || 'All'}
+              <ChevronDownIcon />
+            </button>
+
+            {/* Category Dropdown Menu */}
+            {showCategoryDropdown && (
+              <div
+                ref={categoryDropdownRef}
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  backgroundColor: 'white',
+                  color: '#333',
+                  borderRadius: '8px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                  zIndex: 1000,
+                  minWidth: '200px',
+                  marginTop: '8px',
+                  overflow: 'hidden'
+                }}
+                role="listbox"
+              >
+                {/* Dropdown Header with Teal Gradient */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+                  padding: '2rem',
+                  color: 'white',
+                  textAlign: 'center'
+                }}>
+                  <h3 style={{
+                    fontSize: '1.75rem',
+                    fontWeight: 700,
+                    marginBottom: '0.5rem'
+                  }}>
+                    Browse Products
+                  </h3>
+                  <p style={{
+                    fontSize: '0.95rem',
+                    color: 'rgba(255,255,255,0.9)',
+                    marginBottom: '1.5rem'
+                  }}>
+                    All Categories
+                  </p>
+
+                  {/* Category Search Bar */}
+                  <input
+                    type="text"
+                    placeholder="Search categories..."
+                    value={categorySearchQuery || ''}
+                    onChange={(e) => setCategorySearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.6rem 1rem',
+                      marginBottom: '1rem',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      borderRadius: '6px',
+                      fontSize: '0.95rem',
+                      background: 'rgba(255,255,255,0.15)',
+                      color: 'white',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                    }}
+                  />
+                  
+                  {/* Quick Category Tags */}
+                  <div style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                  }}>
+                    {['All Products', 'T-Shirt', 'Jeans', 'Shoes', 'Fabrics'].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          const categoryMap: Record<string, string> = {
+                            'All Products': 'all',
+                            'T-Shirt': 'tshirts',
+                            'Jeans': 'jeans',
+                            'Shoes': 'shoes',
+                            'Fabrics': 'textiles'
+                          };
+                          setSearchCategory(categoryMap[cat] || 'all');
+                          setCategorySearchQuery('');
+                          setShowCategoryDropdown(false);
+                        }}
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          background: 'rgba(255,255,255,0.2)',
+                          border: '1px solid rgba(255,255,255,0.3)',
+                          borderRadius: '16px',
+                          color: 'white',
+                          fontSize: '0.8rem',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.35)';
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)';
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  key="all"
+                  onClick={() => {
+                    setSearchCategory('all');
+                    setShowCategoryDropdown(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    fontSize: '13px',
+                    transition: 'background-color 0.2s ease',
+                    fontWeight: 500,
+                    color: '#333',
+                    borderBottom: '1px solid #3d5c4f'
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  role="option"
+                  aria-selected={searchCategory === 'all'}
+                >
+                  All Products
+                </button>
+                <div style={{ padding: '0 8px' }}>
+                  <div style={{ fontSize: '12px', color: '#888', margin: '8px 0 4px 0', fontWeight: 600 }}>Popular Categories</div>
+                  <button
+                    key="textiles"
+                    onClick={() => {
+                      setSearchCategory('textiles');
+                      setShowCategoryDropdown(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '13px',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    role="option"
+                    aria-selected={searchCategory === 'textiles'}
+                  >
+                    Textiles
+                  </button>
+                  <button
+                    key="electronics"
+                    onClick={() => {
+                      setSearchCategory('electronics');
+                      setShowCategoryDropdown(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '13px',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    role="option"
+                    aria-selected={searchCategory === 'electronics'}
+                  >
+                    Electronics
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search suppliers..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{
+              flex: 1,
+              border: 'none',
+              padding: '0 12px',
+              fontSize: '14px',
+              outline: 'none',
+              backgroundColor: 'white',
+            }}
+            aria-label="Search for products"
+          />
+
+          {/* Search Button */}
+          <button
+            style={{
+              backgroundColor: '#febd69',
+              border: 'none',
+              color: '#131921',
+              padding: '0 16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: '600',
+              transition: 'background-color 0.2s ease',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0ad4e')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#febd69')}
+            aria-label="Search"
+          >
+            <SearchIcon />
+          </button>
+        </div>
+
+
+
+        {/* Account Button */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              transition: 'background-color 0.2s ease',
+              fontSize: '12px',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#232f3e')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            aria-label="Account menu"
+            aria-haspopup="menu"
+            aria-expanded={showAccountDropdown}
+          >
+            <UserIcon />
+            <span>Account</span>
+            <ChevronDownIcon />
+          </button>
+
+          {/* Account Dropdown */}
+          {showAccountDropdown && (
+            <div
+              ref={accountDropdownRef}
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                backgroundColor: 'white',
+                color: '#333',
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                zIndex: 1000,
+                minWidth: '220px',
+                marginTop: '8px',
+                overflow: 'hidden'
+              }}
+              role="menu"
+            >
+              {/* Header - Styled like Join Banadama */}
+              <div style={{
+                background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+                padding: '2rem',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 700,
+                  marginBottom: '0.5rem'
+                }}>
+                  My Account
+                </h3>
+                <p style={{
+                  fontSize: '0.95rem',
+                  color: 'rgba(255,255,255,0.9)',
+                  marginBottom: '1.5rem'
+                }}>
+                  Account Options
+                </p>
+                <div style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <button onClick={() => {
+                    router.push('/auth/login');
+                    setShowAccountDropdown(false);
+                  }} style={{
+                    padding: '0.625rem 1.25rem',
+                    background: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'inline-block'
+                  }} onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)';
+                  }} onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                  }}>
+                    Sign In
+                  </button>
+                  <button onClick={() => setShowAccountDropdown(false)} style={{
+                    padding: '0.625rem 1.25rem',
+                    background: 'white',
+                    color: '#5bc5cf',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    fontSize: '0.875rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'inline-block'
+                  }} onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                  }} onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}>
+                    Create Account
+                  </button>
+                </div>
+              </div>
+
+              {/* Menu Items */}
+              <div style={{ borderTop: '1px solid #3d5c4f' }}>
+                {['Orders', 'Account Settings', 'Help', 'Sign Out'].map(item => (
+                  <button
+                    key={item}
+                    onClick={() => setShowAccountDropdown(false)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: '#333',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    role="menuitem"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Settings Button */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              transition: 'background-color 0.2s ease',
+              fontSize: '12px',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#232f3e')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            aria-label="Settings menu"
+            aria-haspopup="menu"
+            aria-expanded={showSettingsDropdown}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m2.12 2.12l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m2.12-2.12l4.24-4.24"></path>
+            </svg>
+            <span>Settings</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          {/* Settings Dropdown */}
+          {showSettingsDropdown && (
+            <div
+              ref={settingsDropdownRef}
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                backgroundColor: 'white',
+                color: '#333',
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                zIndex: 1000,
+                minWidth: '320px',
+                marginTop: '8px',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Header - Styled like Join Banadama */}
+              <div style={{
+                background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+                padding: '2rem',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 700,
+                  marginBottom: '0.5rem'
+                }}>
+                  Banadama
+                </h3>
+                <p style={{
+                  fontSize: '0.95rem',
+                  color: 'rgba(255,255,255,0.9)',
+                  marginBottom: 0
+                }}>
+                  Preferences
+                </p>
+              </div>
+
+              {/* Settings Content */}
+              <div style={{ padding: '1.5rem' }}>
+                {/* Language Settings */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: '#333',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Language Settings
+                  </h4>
+                  <p style={{
+                    fontSize: '0.85rem',
+                    color: '#666',
+                    marginBottom: '0.8rem',
+                    lineHeight: 1.4
+                  }}>
+                    Select the language you prefer for browsing, shopping, and communications.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    {['English – EN', 'French – FR', 'Hausa – HA', 'Bangla – BN', 'Arabic – AR'].map(lang => (
+                      <button
+                        key={lang}
+                        onClick={() => {
+                          setSelectedLanguage(lang);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '0.7rem 0.9rem',
+                          border: selectedLanguage === lang ? '2px solid #5bc5cf' : '1px solid #ddd',
+                          background: selectedLanguage === lang ? 'rgba(91, 197, 207, 0.1)' : 'white',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          fontSize: '0.9rem',
+                          fontWeight: selectedLanguage === lang ? 600 : 500,
+                          color: selectedLanguage === lang ? '#5bc5cf' : '#333',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={e => {
+                          if (selectedLanguage !== lang) {
+                            e.currentTarget.style.backgroundColor = '#f5f5f5';
+                            e.currentTarget.style.borderColor = '#5bc5cf';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (selectedLanguage !== lang) {
+                            e.currentTarget.style.backgroundColor = 'white';
+                            e.currentTarget.style.borderColor = '#ddd';
+                          }
+                        }}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div style={{
+                  height: '1px',
+                  background: '#eee',
+                  margin: '1.5rem 0'
+                }}></div>
+
+                {/* Currency Settings */}
+                <div>
+                  <h4 style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: '#333',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Currency Settings
+                  </h4>
+                  <p style={{
+                    fontSize: '0.85rem',
+                    color: '#666',
+                    marginBottom: '0.8rem',
+                    lineHeight: 1.4
+                  }}>
+                    Select the currency you want to shop with.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSelectedCurrency('NGN - Nigerian Naira');
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.9rem',
+                      border: selectedCurrency === 'NGN - Nigerian Naira' ? '2px solid #5bc5cf' : '1px solid #ddd',
+                      background: selectedCurrency === 'NGN - Nigerian Naira' ? 'rgba(91, 197, 207, 0.1)' : 'white',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '0.9rem',
+                      fontWeight: selectedCurrency === 'NGN - Nigerian Naira' ? 600 : 500,
+                      color: selectedCurrency === 'NGN - Nigerian Naira' ? '#5bc5cf' : '#333',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={e => {
+                      if (selectedCurrency !== 'NGN - Nigerian Naira') {
+                        e.currentTarget.style.backgroundColor = '#f5f5f5';
+                        e.currentTarget.style.borderColor = '#5bc5cf';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (selectedCurrency !== 'NGN - Nigerian Naira') {
+                        e.currentTarget.style.backgroundColor = 'white';
+                        e.currentTarget.style.borderColor = '#ddd';
+                      }
+                    }}
+                  >
+                    NGN - Nigerian Naira
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Cart Icon with Badge */}
+        <button
+          onClick={() => setCartSidebarOpen(!cartSidebarOpen)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            position: 'relative',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '44px',
+            height: '44px',
+            borderRadius: '4px',
+            transition: 'background-color 0.2s ease',
+            minWidth: '44px',
+            minHeight: '44px',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#232f3e')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          aria-label={`Shopping cart with ${cartCount} items`}
+        >
+          <CartIcon />
+          {cartCount > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                width: '22px',
+                height: '22px',
+                backgroundColor: '#ff9800',
+                color: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '11px',
+                fontWeight: 'bold',
+              }}
+              aria-label={`${cartCount} items in cart`}
+            >
+              {cartCount}
+            </div>
+          )}
+        </button>
+      </header>
+
+      {/* Category Navigation Bar */}
+      <nav
+        style={{
+          backgroundColor: '#3d5c4f',
+          borderTop: '2px solid #3d5c4f',
+          borderBottom: '1px solid #3d5c4f',
+          boxShadow: '0 2px 8px rgba(61, 92, 79, 0.15)',
+          overflow: 'hidden',
+          position: 'sticky',
+          top: '68px',
+          zIndex: 99,
+        }}
+        role="navigation"
+        aria-label="Product categories"
+      >
+        <div
+          ref={categoryScrollRef}
+          style={{
+            backgroundColor: '#3b2f2f',
+            display: 'flex',
+            gap: '4px',
+            padding: '12px 20px',
+            maxWidth: '1400px',
+            margin: '0 auto',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            scrollBehavior: 'smooth',
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            alignItems: 'center',
+            borderBottom: '2px solid #3d5c4f',
+          }}
+        >
+          {/* CreatorSmart Logo in Category Bar */}
+          <div
+            onClick={() => router.push('/creators')}
+            style={{
+              cursor: 'pointer',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              paddingRight: '16px',
+              borderRight: '1px solid #3d5c4f',
+              marginRight: '8px',
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#ff9800', flexShrink: 0, backgroundColor: '#3d5c4f', padding: '4px', borderRadius: '50%' }} aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+            </svg>
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: '#ff9800',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap'
+            }}>
+              CreatorSmart
+            </span>
+          </div>
+          {CATEGORIES.map(category => (
+            <button
+              key={category.id}
+              onClick={() => handleCategorySelect(category.id)}
+              style={{
+                padding: '8px 16px',
+                border: 'none',
+                backgroundColor: selectedCategory === category.id ? '#5bc5cf' : 'transparent',
+                color: selectedCategory === category.id ? 'white' : '#fff',
+                cursor: 'pointer',
+                fontWeight: selectedCategory === category.id ? '600' : '500',
+                fontSize: '14px',
+                borderRadius: '0',
+                borderBottom: selectedCategory === category.id ? '3px solid #3d5c4f' : 'none',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => {
+                if (selectedCategory !== category.id) {
+                  e.currentTarget.style.opacity = '0.8';
+                }
+              }}
+              onMouseLeave={e => {
+                if (selectedCategory !== category.id) {
+                  e.currentTarget.style.opacity = '1';
+                }
+              }}
+              role="tab"
+              aria-selected={selectedCategory === category.id}
+              aria-label={`View ${category.label}`}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 998,
+          }}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        id="sidebar"
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '280px',
+          height: '100vh',
+          backgroundColor: '#f5f5f5',
+          zIndex: 999,
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s ease-out',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+        role="navigation"
+        aria-label="Sidebar navigation"
+      >
+        {/* Sidebar Header with Logo */}
+        <div
+          style={{
+            backgroundColor: '#131921',
+            color: 'white',
+            padding: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff9800' }}>Banadama</div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            aria-label="Close sidebar"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* Sidebar Categories */}
+        <div style={{ padding: '16px', flex: 1 }}>
+          <h3 style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '12px', fontWeight: '600' }}>
+            Shop by Category
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {CATEGORIES.map(category => (
+              <button
+                key={category.id}
+                onClick={() => handleCategorySelect(category.id)}
+                style={{
+                  padding: '12px',
+                  border: 'none',
+                  backgroundColor: selectedCategory === category.id ? '#f0f0f0' : 'transparent',
+                  color: selectedCategory === category.id ? '#ff9800' : '#333',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontSize: '14px',
+                  fontWeight: selectedCategory === category.id ? '600' : '500',
+                  borderLeft: selectedCategory === category.id ? '3px solid #ff9800' : '3px solid transparent',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => !sidebarOpen || (e.currentTarget.style.backgroundColor = '#f8f8f8')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = selectedCategory === category.id ? '#f0f0f0' : 'transparent')}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Quick Links */}
+          <h3 style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginTop: '24px', marginBottom: '12px', fontWeight: '600' }}>
+            Quick Links
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {[
+              { label: "Today's Deals", href: null },
+              { label: 'Membership', href: null },
+              { label: 'Become a Seller', href: '/supplier' },
+              { label: 'Help Center', href: '/help' },
+              { label: 'About Us', href: '/about' }
+            ].map(link => (
+              <button
+                key={link.label}
+                onClick={() => {
+                  setSidebarOpen(false);
+                  if (link.href) {
+                    router.push(link.href);
+                  }
+                }}
+                style={{
+                  padding: '12px',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: '#333',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
+        {/* Hero Section */}
+        <section
+          style={{
+            background: 'linear-gradient(135deg, #131921 0%, #232f3e 100%)',
+            color: 'white',
+            padding: '40px 20px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            marginBottom: '40px',
+          }}
+        >
+          <h1 style={{ fontSize: '32px', marginBottom: '12px', color: '#3d5c4f' }}>Welcome to Banadama Marketplace</h1>
+          <p style={{ fontSize: '16px', color: '#3d5c4f' }}>
+            Discover premium products from trusted suppliers across Africa
+          </p>
+        </section>
+
+        {/* Products Grid */}
+        {filteredProducts.length > 0 ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '24px',
+            }}
+          >
+            {filteredProducts.map(product => (
+              <div
+                key={product.id}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease',
+                  transform: hoveredProduct === product.id ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => {
+                  setHoveredProduct(product.id);
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(91, 197, 207, 0.25)';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                }}
+                onMouseLeave={e => {
+                  setHoveredProduct(null);
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.15)';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                }}
+              >
+                {/* Product Image */}
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  style={{
+                    width: '100%',
+                    height: '240px',
+                    objectFit: 'cover',
+                  }}
+                />
+
+                {/* Product Info */}
+                <div style={{ padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>
+                    {product.supplier}
+                  </div>
+                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {product.name}
+                  </h3>
+
+                  {/* Rating */}
+                  <div style={{ marginBottom: '8px' }}>{renderStars(product.rating)}</div>
+
+                  {/* Price */}
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#5bc5cf', marginBottom: '12px' }}>
+                    ${product.price.toFixed(2)}
+                  </div>
+
+                  {/* Buttons */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => {
+                        setCartCount(c => c + 1);
+                        setCartItems(prev => {
+                          const existingItem = prev.find(item => item.name === product.name);
+                          if (existingItem) {
+                            return prev.map(item =>
+                              item.name === product.name
+                                ? { ...item, quantity: item.quantity + 1 }
+                                : item
+                            );
+                          }
+                          return [...prev, {
+                            id: prev.length + 1,
+                            name: product.name,
+                            size: 'M',
+                            quantity: 1,
+                            price: Math.round(product.price * 260),
+                            image: ''
+                          }];
+                        });
+                        setCartSidebarOpen(true);
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        backgroundColor: '#5bc5cf',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'background-color 0.2s ease',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#4ab8c2')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#5bc5cf')}
+                    >
+                      <ShoppingBagIcon />
+                      Add to Cart
+                    </button>
+                    <button
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        backgroundColor: 'white',
+                        color: '#5bc5cf',
+                        border: '2px solid #5bc5cf',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '12px',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.backgroundColor = '#5bc5cf';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.backgroundColor = 'white';
+                        e.currentTarget.style.color = '#5bc5cf';
+                      }}
+                    >
+                      RFQ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              color: '#666',
+            }}
+          >
+            <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>No products found</h2>
+            <p>Try adjusting your search or category filters</p>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer
+        style={{
+          backgroundColor: '#131921',
+          color: '#ccc',
+          padding: '40px 20px',
+          marginTop: '60px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '40px',
+            marginBottom: '40px',
+          }}
+        >
+          <div>
+            <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '14px', fontWeight: '600' }}>About Banadama</h4>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {['About Us', 'Careers', 'Blog', 'Press'].map(item => (
+                <li key={item} style={{ marginBottom: '8px' }}>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ccc',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      padding: 0,
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ff9800')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#ccc')}
+                  >
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '14px', fontWeight: '600' }}>Support</h4>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {['Contact Us', 'Help Center', 'FAQs', 'Shipping'].map(item => (
+                <li key={item} style={{ marginBottom: '8px' }}>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ccc',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      padding: 0,
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ff9800')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#ccc')}
+                  >
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '14px', fontWeight: '600' }}>Legal</h4>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {['Privacy', 'Terms', 'Cookies', 'Accessibility'].map(item => (
+                <li key={item} style={{ marginBottom: '8px' }}>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ccc',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      padding: 0,
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ff9800')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#ccc')}
+                  >
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: 'white', marginBottom: '16px', fontSize: '14px', fontWeight: '600' }}>For Sellers</h4>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {['Become a Seller', 'Seller Center', 'Advertising', 'Seller Support'].map(item => (
+                <li key={item} style={{ marginBottom: '8px' }}>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ccc',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      padding: 0,
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ff9800')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#ccc')}
+                  >
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid #333', paddingTop: '20px', textAlign: 'center', fontSize: '12px' }}>
+          <p>&copy; 2024 Banadama Marketplace. All rights reserved.</p>
+        </div>
+      </footer>
+
+      {/* Checkout Sidebar - Cart & Order Summary */}
+      <div
+        style={{
+          position: 'fixed',
+          right: 0,
+          top: 0,
+          width: '380px',
+          height: '100vh',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '-8px 0 32px rgba(31, 38, 135, 0.15)',
+          zIndex: 1000,
+          transform: cartSidebarOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          display: 'flex',
+          flexDirection: 'column',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+        }}
+      >
+        {/* Sidebar Header */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+            color: 'white',
+            padding: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <div>
+            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Order Summary</h2>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', opacity: 0.9 }}>Items in cart: {cartItems.length}</p>
+          </div>
+          <button
+            onClick={() => setCartSidebarOpen(false)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '16px',
+              transition: 'background-color 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)')}
+            aria-label="Close cart"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Cart Items */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px', borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
+          <h3 style={{ fontSize: '13px', color: '#666', textTransform: 'uppercase', marginBottom: '16px', fontWeight: '600' }}>Cart Items ({cartItems.length})</h3>
+          {cartItems.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#999' }}>
+              <p style={{ fontSize: '14px', marginBottom: '12px' }}>Your cart is empty</p>
+              <button
+                onClick={() => setCartSidebarOpen(false)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#5bc5cf',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#4ab8c2')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#5bc5cf')}
+              >
+                Continue Shopping
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {cartItems.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px',
+                    background: 'rgba(91, 197, 207, 0.05)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(91, 197, 207, 0.1)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      backgroundColor: '#e0e0e0',
+                      borderRadius: '8px',
+                      flexShrink: 0,
+                      background: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#999',
+                      fontSize: '24px',
+                    }}
+                  >
+                    📦
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#333' }}>
+                      {item.name}
+                    </p>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#999' }}>Size: {item.size} | Qty: {item.quantity}</p>
+                    <p style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#5bc5cf' }}>₦{item.price.toLocaleString()}</p>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
+                    <button
+                      onClick={() => {
+                        setCartItems(prev => prev.map(i =>
+                          i.id === item.id && i.quantity > 1
+                            ? { ...i, quantity: i.quantity - 1 }
+                            : i
+                        ));
+                        if (item.quantity === 1) {
+                          setCartCount(c => Math.max(0, c - 1));
+                        }
+                      }}
+                      style={{
+                        background: '#f0f0f0',
+                        border: 'none',
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s ease',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#e0e0e0')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCartItems(prev =>
+                          prev.filter(i => i.id !== item.id)
+                        );
+                        setCartCount(c => Math.max(0, c - item.quantity));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#ff6b6b',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        transition: 'opacity 0.2s ease',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                      aria-label="Remove item"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Price Summary */}
+        <div style={{ padding: '20px', backgroundColor: 'rgba(91, 197, 207, 0.05)', borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
+          {(() => {
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = cartItems.length > 0 ? 1000 : 0;
+            const tax = Math.round(subtotal * 0.075);
+            const total = subtotal + shipping + tax;
+
+            return (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#666', fontSize: '13px' }}>Subtotal:</span>
+                  <span style={{ fontWeight: '600', color: '#333' }}>₦{subtotal.toLocaleString()}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#666', fontSize: '13px' }}>Shipping:</span>
+                  <span style={{ fontWeight: '600', color: '#333' }}>₦{shipping.toLocaleString()}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#666', fontSize: '13px' }}>Tax:</span>
+                  <span style={{ fontWeight: '600', color: '#333' }}>₦{tax.toLocaleString()}</span>
+                </div>
+                <div style={{ borderTop: '1px solid rgba(0, 0, 0, 0.1)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '700', color: '#333' }}>Total:</span>
+                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#5bc5cf' }}>₦{total.toLocaleString()}</span>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', flexShrink: 0 }}>
+          <button
+            onClick={() => {
+              if (cartItems.length > 0) {
+                alert('Redirecting to checkout...');
+                // router.push('/checkout');
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '14px',
+              background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '700',
+              cursor: cartItems.length > 0 ? 'pointer' : 'not-allowed',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(91, 197, 207, 0.3)',
+              opacity: cartItems.length > 0 ? 1 : 0.5,
+            }}
+            onMouseEnter={e => {
+              if (cartItems.length > 0) {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(91, 197, 207, 0.4)';
+              }
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(91, 197, 207, 0.3)';
+            }}
+          >
+            {cartItems.length > 0 ? 'Proceed to Checkout' : 'Add Items to Checkout'}
+          </button>
+          <button
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'rgba(91, 197, 207, 0.1)',
+              color: '#5bc5cf',
+              border: '2px solid rgba(91, 197, 207, 0.3)',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(91, 197, 207, 0.15)';
+              e.currentTarget.style.borderColor = '#5bc5cf';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(91, 197, 207, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(91, 197, 207, 0.3)';
+            }}
+            onClick={() => setCartSidebarOpen(false)}
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+
+      {/* Overlay */}
+      {cartSidebarOpen && (
+        <div
+          onClick={() => setCartSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 999,
+            animation: 'fadeIn 0.3s ease',
+          }}
+        />
+      )}
+    </div>
+  );
 }
+
+const LanguageIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+  </svg>
+);
+
+const TrophyIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 9H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1m0 0h8m0 0h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-1m0 0V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4m6 0v10m-6-10V9m6 10H6"></path>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5bc5cf" strokeWidth="3">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);

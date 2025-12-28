@@ -31,6 +31,11 @@ export const Icons = {
             <path d="M3.5 6h.5M3.5 12h.5M3.5 18h.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </IconBase>
     ),
+    Menu: (p: IconProps) => (
+        <IconBase {...p}>
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    ),
 
     // ===== Marketplace =====
     Marketplace: (p: IconProps) => (
@@ -331,6 +336,11 @@ export const Icons = {
             <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
         </IconBase>
     ),
+    ArrowRight: (p: IconProps) => (
+        <IconBase {...p}>
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    ),
     ChevronDown: (p: IconProps) => (
         <IconBase {...p}>
             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -392,8 +402,14 @@ export const Icons = {
     ),
     TickBlue: (p: IconProps) => (
         <IconBase {...p}>
-            <circle cx="12" cy="12" r="10" stroke="hsl(var(--bd-primary))" strokeWidth="2" fill="none" />
-            <path d="M7.5 12.5 10.5 15.5 16.5 9.5" stroke="hsl(var(--bd-primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="2" fill="none" />
+            <path d="M7.5 12.5 10.5 15.5 16.5 9.5" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    ),
+    TickGold: (p: IconProps) => (
+        <IconBase {...p}>
+            <circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="2" fill="none" />
+            <path d="M7.5 12.5 10.5 15.5 16.5 9.5" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </IconBase>
     ),
     Layers: (p: IconProps) => (
@@ -475,6 +491,36 @@ export const Icons = {
     Tiktok: (p: IconProps) => (
         <IconBase {...p}>
             <path d="M9 12a4 4 0 1 0 4 4V4s.5 4 5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </IconBase>
+    ),
+
+    Leaf: (p: IconProps) => (
+        <IconBase {...p}>
+            <path d="M11 20a7 7 0 0 1-7-7c0-3.87 3.13-7 7-7 4.5 0 8 4.5 8 9v5h-8Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M11 20v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M7 13a4 4 0 0 1 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    ),
+    Flask: (p: IconProps) => (
+        <IconBase {...p}>
+            <path d="M9 3h6M10 9h4M10 3v6l-4 8a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-8V3" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        </IconBase>
+    ),
+    Info: (p: IconProps) => (
+        <IconBase {...p}>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    ),
+    Activity: (p: IconProps) => (
+        <IconBase {...p}>
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    ),
+    HelpCircle: (p: IconProps) => (
+        <IconBase {...p}>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </IconBase>
     ),
 

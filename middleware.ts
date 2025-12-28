@@ -1,107 +1,134 @@
-// middleware.ts - Clean host-based subdomain routing for Banadama
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { SESSION_COOKIE_NAME } from "./lib/auth/session.types";
-
-/**
- * SUBDOMAIN CONFIGURATION
- * Maps host subdomains to internal route groups
- */
-const DOMAIN_MAP: Record<string, string> = {
-    "admin": "admin",
-    "ops": "admin/ops", // Ops is now part of admin
-    "supplier": "supplier",
-    "factory": "supplier/factory", // Legacy support
-    "wholesaler": "supplier/wholesaler", // Legacy support
-    "bd": "regional/bd",
-    "ng": "regional/ng",
-};
-
-/**
- * PUBLIC ROUTES
- * These routes are accessible without a session
- */
-const PUBLIC_ROUTES = [
-    "/",
-    "/auth",
-    "/marketplace",
-    "/near-me",
-    "/global",
-    "/creators",
-    "/about",
-    "/terms",
-    "/privacy",
-    "/help",
-    "/support",
-    "/api/auth",
-];
-
-const STATIC_ASSETS = ["/_next", "/favicon", "/manifest", "/icons", "/images", "/api/"];
-
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-    const host = request.headers.get("host") || "";
-
-    // 1. Skip static assets and internal Next.js requests
-    if (STATIC_ASSETS.some(path => pathname.startsWith(path))) {
-        return NextResponse.next();
-    }
-
-    // 2. Determine Subdomain
-    const cleanHost = host.replace(/:\d+$/, ""); // Remove port
-    const parts = cleanHost.split(".");
-
-    // Handle www redirect
-    if (parts[0] === "www") {
-        const url = request.nextUrl.clone();
-        url.host = cleanHost.replace("www.", "");
-        return NextResponse.redirect(url, 301);
-    }
-
-    // Identify subdomain (e.g., admin.banadama.com -> parts.length > 2)
-    // For localhost development, we might not have a subdomain unless using local pods/tunnels
-    const subdomain = parts.length > 2 ? parts[0] : null;
-
-    // 3. Host-based Routing (URL Rewriting)
-    if (subdomain && DOMAIN_MAP[subdomain]) {
-        const targetGroup = DOMAIN_MAP[subdomain];
-
-        // Prevent recursive rewriting if already processed
-        // Route groups like (admin) or (supplier) are usually handled by Next.js automatically
-        // but since we are doing subdomain routing, we rewrite to the internal path.
-        // If we use (admin) in our folder name, the internal path for Next.js is just /admin/path
-
-        const internalPath = `/${targetGroup}${pathname === "/" ? "" : pathname}`;
-
-        // Only rewrite if we're not already targeting the right group
-        // Note: For API routes, we might want to bypass host-based routing or handle it differently
-        if (!pathname.startsWith("/api")) {
-            const url = request.nextUrl.clone();
-            url.pathname = internalPath;
-            return NextResponse.rewrite(url);
-        }
-    }
-
-    // 4. Authentication Check for Protected Portals
-    // We only enforce session check here if the user is attempting to access a dashboard
-    const isProtectedPath = !PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`));
-
-    if (isProtectedPath) {
-        const session = request.cookies.get(SESSION_COOKIE_NAME);
-
-        if (!session?.value) {
-            const loginUrl = new URL("/auth/login", request.url);
-            loginUrl.searchParams.set("redirect", pathname);
-            return NextResponse.redirect(loginUrl);
-        }
-
-        // Deeper session validation (expiry, role) usually happens in server components or layouts
-        // to keep middleware lightweight.
-    }
-
-    return NextResponse.next();
-}
+import { NextRequest, NextResponse } from 'next/server';
 
 export const config = {
-    matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+    matcher: [
+        '/((?!api|_next/static|_next/image|favicon.ico|assets|robots.txt|sitemap.xml|.well-known).*)',
+    ],
 };
+
+/**
+ * MULTI-DOMAIN ROUTING MIDDLEWARE
+ * 
+ * Handles routing for:
+ * - banadama.com / www.banadama.com -> Main marketplace (products only)
+ * - supplier.banadama.com -> Supplier dashboard & onboarding
+ * - ng.banadama.com -> Nigeria regional marketplace
+ * - bd.banadama.com -> Bangladesh regional marketplace
+ * - admin.banadama.com -> Admin panel
+ * - ops.banadama.com -> Operations panel
+ */
+
+interface DomainInfo {
+    type: 'main' | 'supplier' | 'regional' | 'admin' | 'ops';
+    region?: 'NG' | 'BD' | 'GLOBAL';
+}
+
+function getDomainInfo(host: string): DomainInfo {
+    // Normalize host (remove port for dev)
+    const hostname = host.split(':')[0].toLowerCase();
+    
+    // Check for subdomain prefixes
+    if (hostname.startsWith('supplier.')) return { type: 'supplier', region: 'GLOBAL' };
+    if (hostname.startsWith('ng.')) return { type: 'regional', region: 'NG' };
+    if (hostname.startsWith('bd.')) return { type: 'regional', region: 'BD' };
+    if (hostname.startsWith('admin.')) return { type: 'admin' };
+    if (hostname.startsWith('ops.')) return { type: 'ops' };
+    // explicit main domain matches
+    if (hostname === 'banadama.com' || hostname === 'www.banadama.com') return { type: 'main', region: 'GLOBAL' };
+    
+    // Dev override via query param for testing
+    if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
+        const params = new URL(`http://${host}/`).searchParams;
+        const hostParam = params.get('__domain');
+        if (hostParam === 'supplier') return { type: 'supplier', region: 'GLOBAL' };
+        if (hostParam === 'ng') return { type: 'regional', region: 'NG' };
+        if (hostParam === 'bd') return { type: 'regional', region: 'BD' };
+        if (hostParam === 'admin') return { type: 'admin' };
+        if (hostParam === 'ops') return { type: 'ops' };
+    }
+
+    // Default to main domain
+    return { type: 'main', region: 'GLOBAL' };
+}
+
+export function middleware(req: NextRequest) {
+    const url = req.nextUrl.clone();
+    const host = req.headers.get('host') || '';
+    let domainInfo = getDomainInfo(host);
+
+    // Local dev convenience: allow path prefixes to simulate subdomains when running on localhost
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+        const p = url.pathname.toLowerCase();
+        if (p.startsWith('/supplier')) domainInfo = { type: 'supplier', region: 'GLOBAL' };
+        else if (p.startsWith('/ng')) domainInfo = { type: 'regional', region: 'NG' };
+        else if (p.startsWith('/bd')) domainInfo = { type: 'regional', region: 'BD' };
+        else if (p.startsWith('/admin')) domainInfo = { type: 'admin' };
+        else if (p.startsWith('/ops')) domainInfo = { type: 'ops' };
+    }
+
+    // Add domain info to headers for use in pages/components
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set('x-domain-type', domainInfo.type);
+    requestHeaders.set('x-region', domainInfo.region || 'GLOBAL');
+
+    // 1. SUPPLIER SUBDOMAIN
+    if (domainInfo.type === 'supplier') {
+        // If not already under /supplier, rewrite to /supplier
+        if (!url.pathname.startsWith('/supplier')) {
+            // Preserve auth pages
+            if (url.pathname.startsWith('/auth')) {
+                return NextResponse.next({ request: { headers: requestHeaders } });
+            }
+            // Rewrite home to supplier
+            if (url.pathname === '/') {
+                url.pathname = '/supplier';
+                return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+            }
+            // Rewrite other paths
+            url.pathname = `/supplier${url.pathname}`;
+            return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+        }
+    }
+
+    // 2. ADMIN SUBDOMAIN
+    if (domainInfo.type === 'admin') {
+        if (!url.pathname.startsWith('/admin')) {
+            if (url.pathname === '/') {
+                url.pathname = '/admin';
+            } else {
+                url.pathname = `/admin${url.pathname}`;
+            }
+            return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+        }
+    }
+
+    // 3. OPS SUBDOMAIN
+    if (domainInfo.type === 'ops') {
+        if (!url.pathname.startsWith('/ops')) {
+            if (url.pathname === '/') {
+                url.pathname = '/ops';
+            } else {
+                url.pathname = `/ops${url.pathname}`;
+            }
+            return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+        }
+    }
+
+    // 4. REGIONAL SUBDOMAINS (NG, BD)
+    if (domainInfo.type === 'regional') {
+        // For regional hosts, route users to the marketplace but set region header.
+        // If request is not already under /marketplace, rewrite and preserve original path as subpath.
+        if (!url.pathname.startsWith('/marketplace')) {
+            // If root, rewrite to /marketplace
+            if (url.pathname === '/') {
+                url.pathname = '/marketplace';
+            } else {
+                // Preserve sub-paths under marketplace: e.g. ng.banadama.com/products -> /marketplace/products
+                url.pathname = `/marketplace${url.pathname}`;
+            }
+            return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+        }
+    }
+
+    return NextResponse.next({ request: { headers: requestHeaders } });
+}

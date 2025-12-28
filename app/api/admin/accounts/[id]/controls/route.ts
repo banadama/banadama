@@ -1,6 +1,5 @@
 // app/api/admin/accounts/[id]/controls/route.ts - Account Freeze & Limit Controls
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
@@ -189,7 +188,7 @@ export async function PATCH(
 // POST /api/admin/accounts/[id]/controls - Alias for PATCH
 export async function POST(
     request: NextRequest,
-    context: { params: { id: string } }
+    { params }: { params: { id: string } }
 ) {
-    return PATCH(request, context);
+    return PATCH(request, { params });
 }

@@ -792,6 +792,21 @@ This is a contract-based implementation. All changes must:
 
 ---
 
+## 🌐 Vercel Domains & Routing
+
+Banadama uses host-based middleware to provide distinct experiences across subdomains:
+
+- **banadama.com / www.banadama.com**: Main Buyer Experience. Includes Landing, Marketplace, and Buyer Dashboard.
+- **supplier.banadama.com**: Supplier Hub. Includes Supplier Landing, Role Selection Onboarding, and Supplier Dashboards.
+- **admin.banadama.com**: Internal Operations & Administration.
+
+### Middleware Rewrites
+The `middleware.ts` detects the `host` header and rewrites internal paths:
+- `supplier.banadama.com/*` → Rewritten to `/supplier/*`
+- All hosts share `/marketplace` and `/api` routes.
+
+---
+
 ## 📄 License
 
 Proprietary - Banadama Platform
