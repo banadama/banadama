@@ -1,5 +1,4 @@
 export const dynamic = 'force-dynamic';
-export const dynamic = 'force-dynamic';
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { adminNav } from "@/components/layout/nav.admin.final";
 import { requireRole } from "@/lib/auth";

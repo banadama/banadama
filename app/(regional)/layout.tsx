@@ -1,7 +1,12 @@
-export const dynamic = 'force-dynamic';
-export const dynamic = 'force-dynamic';
+// app/(regional)/layout.tsx
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default function RegionalLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return (
+        <div className="min-h-screen bg-white">
+            {children}
+        </div>
+    );
 }

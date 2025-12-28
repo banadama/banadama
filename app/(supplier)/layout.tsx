@@ -1,7 +1,6 @@
-export const dynamic = 'force-dynamic';
 // app/(supplier)/layout.tsx
-export const dynamic = 'force-dynamic';
 import React from 'react';
+export const dynamic = 'force-dynamic';
 import { requireRole } from '@/lib/auth';
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { supplierNav } from "@/components/layout/nav.config";
