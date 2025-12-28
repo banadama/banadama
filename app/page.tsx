@@ -132,7 +132,9 @@ export default function LandingPage() {
                         marginTop: '3rem',
                         paddingTop: '2rem',
                         borderTop: '1px solid rgba(255,255,255,0.1)'
-                    }}>5bc5cf' }}>50K+</div>
+                    }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#5bc5cf' }}>50K+</div>
                             <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>Active Sellers</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
@@ -140,9 +142,7 @@ export default function LandingPage() {
                             <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>Trade Volume</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#5bc5cf
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#f97316' }}>99.8%</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#5bc5cf' }}>99.8%</div>
                             <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>Success Rate</div>
                         </div>
                     </div>
