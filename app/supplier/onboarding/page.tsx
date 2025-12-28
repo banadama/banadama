@@ -101,7 +101,7 @@ export default function SupplierOnboardingPage() {
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>
           Welcome to Banadama
         </h1>
-        <p style={{ color: '#9ca3af' }}>Complete your onboarding in 4 steps</p>
+        <p style={{ color: '#9ca3af' }}>Complete your onboarding in 5 steps</p>
         
         {/* Progress Bar */}
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem', justifyContent: 'center' }}>
