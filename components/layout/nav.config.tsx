@@ -72,15 +72,15 @@ export const creatorNav: NavItem[] = [
 ];
 
 export const affiliateNav: NavItem[] = [
-    { href: "/affiliate/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/affiliate/links", label: "Links", icon: <Icons.Link /> },
-    { href: "/affiliate/sales", label: "Sales", icon: <Icons.Receipt /> },
-    { href: "/affiliate/earnings", label: "Earnings", icon: <Icons.Bank /> },
-    { href: "/affiliate/withdraw", label: "Withdraw", icon: <Icons.Wallet /> },
+    { href: "/dashboard", label: "Dashboard", icon: <Icons.Home /> },
+    { href: "/links", label: "Links", icon: <Icons.Link /> },
+    { href: "/sales", label: "Sales", icon: <Icons.Receipt /> },
+    { href: "/earnings", label: "Earnings", icon: <Icons.Bank /> },
+    { href: "/withdraw", label: "Withdraw", icon: <Icons.Wallet /> },
 ];
 
 export const supplierNav: NavItem[] = [
-    { href: "/supplier/dashboard", label: "Dashboard", icon: <Icons.Home /> },
+    { href: "/supplier/studio", label: "Dashboard", icon: <Icons.Home /> },
     { href: "/supplier/products", label: "Products", icon: <Icons.Product /> },
     { href: "/supplier/rfqs", label: "RFQs", icon: <Icons.RFQ /> },
     { href: "/supplier/orders", label: "Orders", icon: <Icons.Orders /> },

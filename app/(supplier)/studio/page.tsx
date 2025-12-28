@@ -91,7 +91,7 @@ export default function SupplierHubPage() {
                 </Link>
 
                 {/* Dashboard */}
-                <Link href="/supplier/dashboard">
+                <Link href="/supplier/studio">
                     <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-6 hover:bg-slate-800/80 transition-colors cursor-pointer">
                         <div className="text-3xl mb-3">📊</div>
                         <h2 className="text-xl font-semibold text-slate-100">Dashboard</h2>
@@ -135,7 +135,7 @@ export default function SupplierHubPage() {
             {/* CTA Section */}
             <div className="text-center py-4">
                 <Link
-                    href="/supplier/dashboard"
+                    href="/supplier/studio"
                     className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-base font-semibold transition-all"
                     style={{ backgroundColor: '#3d5c4f', color: '#ffffff' }}
                 >
