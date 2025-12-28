@@ -5,13 +5,7 @@ const nextConfig = {
     // Ignore React type compatibility issues between @types/react versions
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // Also ignore ESLint errors during build (can run separately)
-    ignoreDuringBuilds: true,
-  },
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
+  serverExternalPackages: ["@prisma/client"],
 
   async redirects() {
     return [

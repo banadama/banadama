@@ -1,12 +1,15 @@
 /* app/globals.css - BANADAMA GLOBAL STYLES (DARK MODE) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Import design system */
 @import "../styles/tokens.css";
 @import "../styles/ui.css";
 @import "../styles/tables.css";
+@import "../styles/marketplace.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 /* Base reset */
 * {
@@ -172,21 +175,71 @@
   }
 }
 
-/* Glass morphism styles */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* Glass morphism styles (Liquid Glass) */
+.glass {
+  background: var(--bd-card);
+  backdrop-filter: blur(var(--bd-glass-blur));
+  -webkit-backdrop-filter: blur(var(--bd-glass-blur));
+  border: 1px solid var(--bd-glass-border);
+  box-shadow: var(--bd-shadow);
 }
 
-.glass-container {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 16px;
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+/* Orange Glow styles */
+.glow {
+  box-shadow: 0 0 15px var(--bd-accent-glow);
+}
+
+.glow-strong {
+  box-shadow: 0 0 25px var(--bd-accent-glow-strong);
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 25px var(--bd-accent-glow-strong);
+}
+
+/* Premium V2 Components */
+.btn-v2 {
+  height: var(--bd-btn-height);
+  padding: 0 24px;
+  border-radius: var(--bd-radius-sm);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  gap: 8px;
+}
+
+.btn-v2-primary {
+  background: var(--bd-accent);
+  color: #000;
+  box-shadow: 0 0 15px var(--bd-accent-glow);
+}
+
+.btn-v2-primary:hover {
+  background: var(--bd-accent-hover);
+  box-shadow: 0 0 25px var(--bd-accent-glow-strong);
+  transform: scale(1.02);
+}
+
+.btn-v2-secondary {
+  background: var(--bd-card);
+  border: 1px solid var(--bd-glass-border);
+  backdrop-filter: blur(var(--bd-glass-blur));
+  color: var(--bd-text);
+}
+
+.btn-v2-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* SVG stroke animation */
@@ -196,11 +249,7 @@
   }
 }
 
-/* Additional animation delays */
-.delay-700 {
-  animation-delay: 0.7s;
-}
-
-.delay-1000 {
-  animation-delay: 1s;
+/* Utility to remove emojis if needed via content replacement or hiding if we can't edit strings yet */
+.no-emoji {
+  font-family: "Inter", sans-serif;
 }
