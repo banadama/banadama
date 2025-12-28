@@ -1,7 +1,5 @@
-// app/(regional)/layout.tsx
-import React from 'react';
-
 export const dynamic = 'force-dynamic';
+import React from 'react';
 
 export default function RegionalLayout({ children }: { children: React.ReactNode }) {
     return (
