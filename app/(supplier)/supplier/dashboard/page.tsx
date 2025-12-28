@@ -23,9 +23,9 @@ export default function SupplierDashboardPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-semibold text-slate-50">Supplier Dashboard</h1>
-                <p className="text-sm text-slate-400 mt-1">
+            <div style={{ backgroundColor: '#3d5c4f', padding: '16px', borderRadius: 8 }}>
+                <h1 className="text-2xl font-semibold" style={{ color: '#ffffff' }}>Supplier Dashboard</h1>
+                <p className="text-sm mt-1" style={{ color: '#e6efe9' }}>
                     Manage your products, RFQs, and orders
                 </p>
             </div>
@@ -143,7 +143,8 @@ export default function SupplierDashboardPage() {
                 <div className="flex flex-wrap gap-3">
                     <Link
                         href="/supplier/products/new"
-                        className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+                        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                        style={{ backgroundColor: '#3d5c4f', color: '#ffffff' }}
                     >
                         <span>+</span> Add Product
                     </Link>
