@@ -765,29 +765,112 @@ model CreatorDelivery {
 model Product {
   id String @id @default(cuid())
 
-  // Basic info
-  name         String
-  description  String?
+  // ========================================
+  // BASIC INFORMATION
+  // ========================================
+  name              String // Max 200 chars
+  slug              String? @unique
+  description       String? // Rich text
+  shortDescription  String? // Max 500 chars
+  brand             String?
+
+  // Categorization
   categorySlug String?
   categoryName String?
+  categoryId   String?
+  subcategoryId String?
+  tags         String[] @default([])
 
-  // Pricing
-  unitPrice Float
-  moq       Int? // Minimum Order Quantity
-
-  // Inventory
-  stockQuantity Int?
-
-  // Metadata
-  countryOfOrigin String?
-  images          String[] @default([])
-
-  // Owner (supplier or creator)
+  // ========================================
+  // OWNER & ROLE
+  // ========================================
   supplierId String?
   supplier   SupplierProfile? @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   creatorId  String?
   creator    CreatorProfile?  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  supplierRole String? // FACTORY, WHOLESALER, RETAILER, CREATOR, AFFILIATE
 
+  // ========================================
+  // PRICING (Role-dependent)
+  // ========================================
+  basePrice       Float? // Base/wholesale price
+  compareAtPrice  Float? // For showing discounts (Retailer)
+  costPrice       Float? // Supplier's cost
+  unitPrice       Float? // Current price
+
+  // Factory-specific: Tiered pricing
+  pricingType     String? @default("FIXED") // FIXED or TIERED
+  moq             Int? @default(1) // Minimum Order Quantity
+  productionCapacity Int? // Units per month
+  leadTime        Int? // Days
+
+  // Creator-specific
+  deliveryTime    Int? // Days
+  revisionsIncluded Int?
+  serviceType     String? // DIGITAL, LOCAL_SERVICE, etc.
+  hourlyRate      Float?
+  customQuoteAvailable Boolean @default(false)
+
+  // Affiliate-specific
+  originalProductId String?
+  commissionRate    Float? // Percentage
+
+  // ========================================
+  // INVENTORY
+  // ========================================
+  stockQuantity     Int? @default(0)
+  lowStockAlert     Int? @default(10)
+  allowBackorder    Boolean @default(false)
+  continueSellingOutOfStock Boolean @default(false)
+
+  // ========================================
+  // IMAGES & MEDIA
+  // ========================================
+  images String[] @default([]) // Array of image URLs
+  videoUrl String? // YouTube/Vimeo URL
+  mainImageUrl String? // URL of main product image
+
+  // ========================================
+  // SHIPPING & DIMENSIONS
+  // ========================================
+  weight  Float? // kg
+  length  Float? // cm
+  width   Float? // cm
+  height  Float? // cm
+  
+  shippingMode String? // LOCAL, INTERNATIONAL, BOTH
+  
+  // Factory shipping options
+  factoryPickup Boolean @default(false)
+  containerLoading Boolean @default(false)
+  doorToDoorDelivery Boolean @default(false)
+  
+  // Wholesaler/Retailer delivery zones
+  deliveryZones String[] @default([]) // e.g., ["Lagos", "Abuja"]
+  shippingFee Float?
+  estimatedDeliveryMin Int? // Min delivery days
+  estimatedDeliveryMax Int? // Max delivery days
+  
+  // Creator digital delivery
+  deliveryMethod String? // DIGITAL, EMAIL, PHYSICAL
+  fileFormats String[] @default([]) // PDF, PNG, AI, etc.
+  serviceArea String? // GLOBAL, LOCAL_ONLY, etc.
+  
+  // Factory export docs
+  exportDocuments String[] @default([]) // Commercial Invoice, Packing List, COO, etc.
+  packaging String? // Description of packaging
+
+  // ========================================
+  // STATUS & VISIBILITY
+  // ========================================
+  status          String @default("DRAFT") // DRAFT, ACTIVE, INACTIVE, PENDING_APPROVAL, REJECTED
+  approvalStatus  ProductApprovalStatus @default(PENDING)
+  
+  visibility      Json? // {main: true, ng: true, bd: false}
+  isHiddenByAdmin Boolean @default(false)
+  isFlagged       Boolean @default(false)
+  
   // Settings
   allowRfq      Boolean @default(true)
   allowBuyNow   Boolean @default(true)
@@ -795,42 +878,146 @@ model Product {
   isActive      Boolean @default(true)
 
   // ========================================
-  // ADMIN PRODUCT CONTROLS
+  // SEO
   // ========================================
-  approvalStatus    ProductApprovalStatus @default(PENDING)
+  metaTitle       String?
+  metaDescription String?
+
+  // ========================================
+  // METADATA & TRACKING
+  // ========================================
+  countryOfOrigin String?
+  country         String? // ISO country code
+  
+  viewsCount      Int @default(0)
+  salesCount      Int @default(0)
+  ratingAverage   Float @default(0)
+  ratingCount     Int @default(0)
+
+  // Admin tracking
   approvedAt        DateTime?
   approvedByAdminId String?
   rejectionReason   String?
-
-  // Admin visibility control
-  isHiddenByAdmin Boolean   @default(false)
-  hiddenReason    String?
-  hiddenAt        DateTime?
-  hiddenByAdminId String?
-
-  // Flagging for misleading content
-  isFlagged        Boolean   @default(false)
-  flagReason       String?
-  flaggedAt        DateTime?
-  flaggedByAdminId String?
-
-  // Price change tracking (requires approval if enabled)
+  hiddenReason      String?
+  hiddenAt          DateTime?
+  hiddenByAdminId   String?
   priceChangeRequiresApproval Boolean @default(false)
-  lastApprovedPrice           Float?
+  lastApprovedPrice Float?
+  
+  publishedAt     DateTime?
 
-  // Relations
+  // ========================================
+  // RELATIONS
+  // ========================================
+  variants        ProductVariant[]
+  attributes      ProductAttribute[]
+  pricingTiers    ProductPricingTier[]
+  servicePackages ServicePackage[]
+  
   requests Request[]
   orders   Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete
 
   @@index([supplierId])
   @@index([creatorId])
   @@index([categorySlug])
   @@index([approvalStatus])
+  @@index([status])
   @@index([isHiddenByAdmin])
   @@index([isFlagged])
+  @@index([createdAt])
+}
+
+// ========================================
+// PRODUCT VARIANTS (Color/Size combinations)
+// ========================================
+model ProductVariant {
+  id String @id @default(cuid())
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  sku    String @unique
+  name   String // e.g., "Black / Medium"
+  
+  price  Float?
+  stockQuantity Int @default(0)
+  
+  // Variant-specific image
+  imageId String?
+  imageUrl String?
+  
+  // Attributes as JSON: {color: "Black", size: "M"}
+  attributes Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+// ========================================
+// PRODUCT ATTRIBUTES (Color, Size, Material, etc.)
+// ========================================
+model ProductAttribute {
+  id String @id @default(cuid())
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  attributeName  String // e.g., "Color", "Size", "Material"
+  attributeValue String // Comma-separated values or JSON
+
+  displayOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+// ========================================
+// PRICING TIERS (Factory MOQ-based pricing)
+// ========================================
+model ProductPricingTier {
+  id String @id @default(cuid())
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  minQuantity Int
+  maxQuantity Int? // NULL = infinity
+  pricePerUnit Float
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+// ========================================
+// SERVICE PACKAGES (Creator packages)
+// ========================================
+model ServicePackage {
+  id String @id @default(cuid())
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  name        String // "Basic", "Standard", "Premium"
+  description String?
+  
+  price       Float
+  deliveryTime Int // Days
+  revisions   Int
+  
+  features    String[] @default([]) // Array of features
+  displayOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
 }
 
 model Request {

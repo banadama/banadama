@@ -68,11 +68,11 @@ export function dashboardForRole(role: Role): string {
         case "OPS":
             return "/ops/overview";
         case "COMPANY_FACTORY":
-            return "/factory/dashboard";
+                return "/supplier/dashboard";
         case "COMPANY_WHOLESALER":
-            return "/wholesaler/dashboard";
+                return "/supplier/dashboard";
         case "COMPANY_RETAIL":
-            return "/retail/dashboard";
+                return "/supplier/dashboard";
         case "CREATOR":
             return "/creator/dashboard";
         case "AFFILIATE":

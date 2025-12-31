@@ -11,14 +11,10 @@ export const publicNav: NavItem[] = [
     { href: "/creators", label: "Creators", icon: <Icons.Brush /> },
 ];
 
-export const buyerNav: NavItem[] = [
-    { href: "/buyer/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/buyer/requests", label: "RFQs", icon: <Icons.RFQ /> },
-    { href: "/buyer/orders", label: "Orders", icon: <Icons.Orders /> },
-    { href: "/buyer/wallet", label: "Wallet", icon: <Icons.Wallet /> },
-    { href: "/buyer/messages", label: "Messages", icon: <Icons.Message /> },
-    { href: "/buyer/settings", label: "Settings", icon: <Icons.Settings /> },
-];
+// DEPRECATED: Buyers do NOT have dashboards per spec
+// Use buyer popover modal auth instead
+// This nav is kept for reference but should not be used
+// export const buyerNav: NavItem[] = [...]
 
 export const opsNav: NavItem[] = [
     { href: "/ops/overview", label: "Overview", icon: <Icons.Grid /> },
@@ -38,49 +34,76 @@ export const opsNav: NavItem[] = [
 
 export const factoryNav: NavItem[] = [
     { href: "/factory/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/factory/rfqs", label: "RFQs", icon: <Icons.RFQ /> },
     { href: "/factory/orders", label: "Orders", icon: <Icons.Package /> },
-    { href: "/factory/capabilities", label: "Capabilities", icon: <Icons.Capabilities /> },
+    { href: "/factory/capacity", label: "Production Capacity", icon: <Icons.TrendingUp /> },
+    { href: "/factory/inventory", label: "Inventory Levels", icon: <Icons.Stock /> },
+    { href: "/factory/products", label: "Product Catalog", icon: <Icons.Product /> },
+    { href: "/factory/pricing", label: "Pricing & MOQ", icon: <Icons.Receipt /> },
+    { href: "/factory/logistics", label: "Shipping & Logistics", icon: <Icons.Truck /> },
+    { href: "/factory/certifications", label: "Certifications", icon: <Icons.Shield /> },
     { href: "/factory/messages", label: "Messages", icon: <Icons.Message /> },
-    { href: "/factory/wallet", label: "Wallet", icon: <Icons.Wallet /> },
+    { href: "/factory/analytics", label: "Analytics", icon: <Icons.TrendingUp /> },
+    { href: "/factory/settings", label: "Settings", icon: <Icons.Settings /> },
 ];
 
 export const wholesalerNav: NavItem[] = [
     { href: "/wholesaler/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/wholesaler/products", label: "Products", icon: <Icons.Product /> },
-    { href: "/wholesaler/stock", label: "Stock", icon: <Icons.Stock /> },
     { href: "/wholesaler/orders", label: "Orders", icon: <Icons.Orders /> },
+    { href: "/wholesaler/inventory", label: "Inventory Levels", icon: <Icons.Stock /> },
+    { href: "/wholesaler/products", label: "Product Catalog", icon: <Icons.Product /> },
+    { href: "/wholesaler/pricing", label: "Pricing Tiers", icon: <Icons.Receipt /> },
+    { href: "/wholesaler/delivery-zones", label: "Delivery Zones", icon: <Icons.Truck /> },
+    { href: "/wholesaler/suppliers", label: "Supplier Network", icon: <Icons.Users /> },
     { href: "/wholesaler/messages", label: "Messages", icon: <Icons.Message /> },
-    { href: "/wholesaler/wallet", label: "Wallet", icon: <Icons.Wallet /> },
+    { href: "/wholesaler/sales-analytics", label: "Sales Analytics", icon: <Icons.TrendingUp /> },
+    { href: "/wholesaler/payments", label: "Payments", icon: <Icons.Wallet /> },
+    { href: "/wholesaler/settings", label: "Settings", icon: <Icons.Settings /> },
 ];
 
 export const retailNav: NavItem[] = [
-    { href: "/retail/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/retail/products", label: "Products", icon: <Icons.Product /> },
-    { href: "/retail/stock", label: "Stock", icon: <Icons.Stock /> },
-    { href: "/retail/orders", label: "Orders", icon: <Icons.Orders /> },
-    { href: "/retail/messages", label: "Messages", icon: <Icons.Message /> },
-    { href: "/retail/wallet", label: "Wallet", icon: <Icons.Wallet /> },
+    { href: "/retailer/dashboard", label: "Dashboard", icon: <Icons.Home /> },
+    { href: "/retailer/orders", label: "Orders", icon: <Icons.Orders /> },
+    { href: "/retailer/products", label: "Product Catalog", icon: <Icons.Product /> },
+    { href: "/retailer/inventory", label: "Inventory", icon: <Icons.Stock /> },
+    { href: "/retailer/purchase-orders", label: "Purchase Orders", icon: <Icons.ShoppingCart /> },
+    { href: "/retailer/pricing", label: "Pricing", icon: <Icons.Receipt /> },
+    { href: "/retailer/locations", label: "Store Locations", icon: <Icons.Location /> },
+    { href: "/retailer/messages", label: "Messages", icon: <Icons.Message /> },
+    { href: "/retailer/sales-reports", label: "Sales Reports", icon: <Icons.TrendingUp /> },
+    { href: "/retailer/payments", label: "Payments", icon: <Icons.Wallet /> },
+    { href: "/retailer/settings", label: "Settings", icon: <Icons.Settings /> },
 ];
 
 export const creatorNav: NavItem[] = [
     { href: "/creator/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/creator/jobs", label: "Local Jobs", icon: <Icons.Location /> },
-    { href: "/creator/products", label: "Digital Products", icon: <Icons.Product /> },
-    { href: "/creator/wallet", label: "Wallet", icon: <Icons.Wallet /> },
+    { href: "/creator/projects", label: "Projects", icon: <Icons.Briefcase /> },
+    { href: "/creator/portfolio", label: "Portfolio", icon: <Icons.Image /> },
+    { href: "/creator/services", label: "Services & Pricing", icon: <Icons.Receipt /> },
+    { href: "/creator/availability", label: "Availability Calendar", icon: <Icons.Calendar /> },
+    { href: "/creator/deliverables", label: "File Delivery", icon: <Icons.FileText /> },
     { href: "/creator/messages", label: "Messages", icon: <Icons.Message /> },
+    { href: "/creator/reviews", label: "Reviews & Ratings", icon: <Icons.Star /> },
+    { href: "/creator/earnings", label: "Earnings", icon: <Icons.Wallet /> },
+    { href: "/creator/resources", label: "Resources", icon: <Icons.Library /> },
+    { href: "/creator/service-area", label: "Service Area", icon: <Icons.Globe /> },
+    { href: "/creator/settings", label: "Settings", icon: <Icons.Settings /> },
 ];
 
 export const affiliateNav: NavItem[] = [
-    { href: "/dashboard", label: "Dashboard", icon: <Icons.Home /> },
-    { href: "/links", label: "Links", icon: <Icons.Link /> },
-    { href: "/sales", label: "Sales", icon: <Icons.Receipt /> },
-    { href: "/earnings", label: "Earnings", icon: <Icons.Bank /> },
-    { href: "/withdraw", label: "Withdraw", icon: <Icons.Wallet /> },
+    { href: "/affiliate/dashboard", label: "Dashboard", icon: <Icons.Home /> },
+    { href: "/affiliate/links", label: "Affiliate Links", icon: <Icons.Link /> },
+    { href: "/affiliate/performance", label: "Performance", icon: <Icons.TrendingUp /> },
+    { href: "/affiliate/commissions", label: "Commissions", icon: <Icons.Receipt /> },
+    { href: "/affiliate/products", label: "Product Catalog", icon: <Icons.Product /> },
+    { href: "/affiliate/campaigns", label: "Campaign Analytics", icon: <Icons.BarChart /> },
+    { href: "/affiliate/messages", label: "Messages", icon: <Icons.Message /> },
+    { href: "/affiliate/marketing", label: "Marketing Materials", icon: <Icons.Image /> },
+    { href: "/affiliate/payouts", label: "Payouts", icon: <Icons.Wallet /> },
+    { href: "/affiliate/settings", label: "Settings", icon: <Icons.Settings /> },
 ];
 
 export const supplierNav: NavItem[] = [
-    { href: "/supplier/studio", label: "Dashboard", icon: <Icons.Home /> },
+    { href: "/supplier/dashboard", label: "Dashboard", icon: <Icons.Home /> },
     { href: "/supplier/products", label: "Products", icon: <Icons.Product /> },
     { href: "/supplier/rfqs", label: "RFQs", icon: <Icons.RFQ /> },
     { href: "/supplier/orders", label: "Orders", icon: <Icons.Orders /> },

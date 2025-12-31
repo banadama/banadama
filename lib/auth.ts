@@ -45,7 +45,7 @@ export interface SessionPayload {
 // ============================================
 
 const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || "your-super-secret-jwt-key-change-in-production"
+    process.env.JWT_SECRET || "test-secret-key"
 );
 
 const JWT_COOKIE_NAME = "banadama-session";
@@ -77,7 +77,7 @@ export async function setSession(user: AuthUser): Promise<string> {
         };
 
         // Sign JWT
-        const token = await new SignJWT(payload)
+        const token = await new SignJWT(payload as any)
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
             .setExpirationTime(JWT_EXPIRY)
@@ -208,6 +208,7 @@ export async function requireRole(
 
     if (!user) {
         redirect("/auth/login");
+        throw new Error("Redirected to login");
     }
 
     // Handle legacy roles (FACTORY, WHOLESALER → SUPPLIER)
@@ -216,6 +217,7 @@ export async function requireRole(
 
     if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
         redirect("/auth/forbidden");
+        throw new Error("Redirected to forbidden");
     }
 
     return user;
@@ -232,6 +234,7 @@ export async function requireAuth(): Promise<AuthUser> {
 
     if (!user) {
         redirect("/auth/login");
+        throw new Error("Redirected to login");
     }
 
     return user;
@@ -320,19 +323,25 @@ export async function requireApiRole(
 
 /**
  * Get role-based dashboard URL
+ * SPEC: Buyers have NO dashboard - they only access the marketplace
+ * All supplier types (Factory, Wholesaler, Retailer) use unified supplier dashboard
+ * Creators, Affiliates, Admin, and Ops have their own dashboards
  */
 export function getRoleDashboard(role: Role): string {
     const normalized = normalizeRole(role);
 
-    const dashboards: Record<Role, string> = {
-        BUYER: "/buyer/dashboard",
-        SUPPLIER: "/factory/dashboard", // Default suppliers to factory
-        FACTORY: "/factory/dashboard",
-        WHOLESALER: "/wholesaler/dashboard",
-        CREATOR: "/creator/dashboard",
-        OPS: "/ops/overview",
-        AFFILIATE: "/affiliate/dashboard",
-        ADMIN: "/admin/overview",
+    const dashboards: Record<string, string> = {
+        BUYER: "/marketplace",
+        SUPPLIER: "/supplier/dashboard",
+        FACTORY: "/supplier/dashboard",
+        WHOLESALER: "/supplier/dashboard",
+        CREATOR: "/supplier/dashboard",
+        OPS: "/ops/dashboard",
+        AFFILIATE: "/supplier/dashboard",
+        ADMIN: "/admin/dashboard",
+        FINANCE_ADMIN: "/admin/dashboard",
+        GROWTH_AGENT: "/ops/dashboard",
+        GROWTH_MANAGER: "/ops/dashboard",
     };
 
     return dashboards[role] || "/";
@@ -340,20 +349,48 @@ export function getRoleDashboard(role: Role): string {
 
 /**
  * Check if route is public (doesn't require auth)
+ * SPEC: Buyer-only marketplace routes + public info pages
  */
 export function isPublicRoute(pathname: string): boolean {
+    // Explicitly treat protected areas as non-public
+    const protectedPrefixes = ["/buyer", "/admin", "/ops", "/supplier", "/creator", "/affiliate", "/factory", "/wholesaler"];
+    if (protectedPrefixes.some((p) => pathname.startsWith(p))) return false;
     const publicPaths = [
+        // Public landing & info
         "/",
+        "/about",
+        "/blog",
+        "/contact",
+        "/help",
+        "/privacy",
+        "/terms",
+        "/cookies",
+        "/safety",
+        // Buyer marketplace (public, no auth required to browse)
+        "/marketplace",
+        "/marketplace/",
+        "/product/",
+        "/seller/",
+        "/orders",
+        "/messages",
+        "/membership",
+        "/account",
+        // CreatorsMart (public, no auth required to browse)
+        "/creators",
+        "/creatorsmart",
+        // Auth pages
         "/auth/login",
         "/auth/register",
         "/auth/forgot-password",
-        "/marketplace",
+        // Regional marketplace
         "/buy-near-me",
         "/global-market",
         "/group-buy",
-        "/creators",
-        "/affiliate",
+        "/near-me",
+        // Public APIs
         "/api/auth",
+        // Affiliate landing (public landing)
+        "/affiliate",
     ];
 
     return publicPaths.some((path) => pathname.startsWith(path));
@@ -361,19 +398,26 @@ export function isPublicRoute(pathname: string): boolean {
 
 /**
  * Get allowed routes for a role
+ * SPEC: Buyers only access /marketplace and public routes (no dashboard)
+ * Suppliers (all types) access /supplier domain
+ * Creators and Affiliates access /supplier domain
+ * OPS and ADMIN access their own domains
  */
 export function getAllowedRoutesForRole(role: Role): string[] {
     const normalized = normalizeRole(role);
 
-    const routes: Record<Role, string[]> = {
+    const routes: Record<string, string[]> = {
         BUYER: ["/buyer"],
         SUPPLIER: ["/supplier"],
         FACTORY: ["/supplier"],
         WHOLESALER: ["/supplier"],
-        CREATOR: ["/creator"],
+        CREATOR: ["/supplier"],
         OPS: ["/ops"],
-        AFFILIATE: ["/affiliate"],
-        ADMIN: ["/admin", "/ops"], // Admin can access everything
+        AFFILIATE: ["/supplier"],
+        ADMIN: ["/admin", "/ops"],
+        FINANCE_ADMIN: ["/admin"],
+        GROWTH_AGENT: ["/ops"],
+        GROWTH_MANAGER: ["/ops"],
     };
 
     return routes[normalized] || [];

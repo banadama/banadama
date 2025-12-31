@@ -5,7 +5,6 @@ const nextConfig = {
     // Ignore React type compatibility issues between @types/react versions
     ignoreBuildErrors: true,
   },
-  serverExternalPackages: ["@prisma/client"],
 
   async redirects() {
     return [

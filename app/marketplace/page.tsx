@@ -70,6 +70,100 @@ const ShoppingBagIcon = () => (
   </svg>
 );
 
+const HeartIcon = ({ filled = false }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+  </svg>
+);
+
+const ShareIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="white" strokeWidth="2" aria-hidden="true">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
+
+const StoreIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M6 9V3h12v6M3 9h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+    <path d="M9 13h6M9 17h6" strokeLinecap="round"></path>
+  </svg>
+);
+
+// Country Flags with Size Support
+interface FlagProps {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const getSizeValues = (size?: 'sm' | 'md' | 'lg') => {
+  switch (size) {
+    case 'sm': return { width: 16, height: 10 };
+    case 'lg': return { width: 28, height: 18 };
+    default: return { width: 20, height: 12 }; // md
+  }
+};
+
+const BangladeshFlag = ({ size = 'md' }: FlagProps) => {
+  const { width, height } = getSizeValues(size);
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" width={width} height={height} style={{ borderRadius: '2px', display: 'inline-block' }} title="Bangladesh">
+      <rect width="20" height="12" fill="#006a4e"/>
+      <circle cx="10" cy="6" r="4" fill="#f42a41"/>
+    </svg>
+  );
+};
+
+const NigeriaFlag = ({ size = 'md' }: FlagProps) => {
+  const { width, height } = getSizeValues(size);
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" width={width} height={height} style={{ borderRadius: '2px', display: 'inline-block' }} title="Nigeria">
+      <rect width="20" height="12" fill="#008751"/>
+      <rect x="6.67" width="6.67" height="12" fill="white"/>
+    </svg>
+  );
+};
+
+const GlobalFlag = ({ size = 'md' }: FlagProps) => {
+  const sizeMap = {
+    sm: 14,
+    md: 18,
+    lg: 24
+  };
+  const iconSize = sizeMap[size || 'md'];
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#5bc5cf" strokeWidth="1.5" width={iconSize} height={iconSize} style={{ flexShrink: 0, display: 'inline-block' }} title="Global">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+  );
+};
+
+// Verification Badge Color Helper
+const getVerificationColor = (supplierType?: string) => {
+  switch (supplierType?.toLowerCase()) {
+    case 'factory':
+      return '#2ecc71'; // Green
+    case 'wholesaler':
+      return '#5bc5cf'; // Teal/Greenish Blue
+    case 'retail':
+      return '#1a3a52'; // Dark Blue/Navy
+    case 'company':
+    case 'admin':
+      return '#f39c12'; // Gold
+    default:
+      return '#4caf50'; // Default Green
+  }
+};
+
 // Data
 const CATEGORIES = [
   { id: 'industrial', label: 'Industrial' },
@@ -82,81 +176,217 @@ const SAMPLE_PRODUCTS = [
     id: 1,
     name: 'Premium Cotton Fabric',
     supplier: 'TextileCo Ltd',
+    supplierUsername: 'textileco-ng',
+    supplierType: 'factory', // Factory - Green
+    verified: true,
+    itemNumber: '97760-21',
+    brand: 'JIN SHEN RUN',
     price: 45.99,
     rating: 4.8,
     reviews: 234,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Cotton+Fabric',
+    attributes: {
+      fabric: 'Cotton',
+      composition: 'Cotton / Polyester',
+      style: 'Denim',
+      color: 'Navy Blue',
+      elasticity: 'Medium',
+      season: 'All Season',
+      marketRegions: ['Nigeria', 'Bangladesh', 'Global']
+    }
   },
   {
     id: 2,
     name: 'Polyester Blend',
     supplier: 'FabricHub International',
+    supplierUsername: 'fabrichub-global',
+    supplierType: 'wholesaler', // Wholesaler - Teal
+    verified: true,
+    itemNumber: '75420-15',
+    brand: 'HYBRID TEXTILES',
     price: 32.50,
     rating: 4.6,
     reviews: 156,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Polyester',
+    attributes: {
+      fabric: 'Polyester Blend',
+      composition: 'Polyester 60% / Cotton 40%',
+      style: 'Casual Wear',
+      color: 'Multiple',
+      elasticity: 'High',
+      season: 'Summer',
+      marketRegions: ['Nigeria', 'Global']
+    }
   },
   {
     id: 3,
     name: 'Silk Premium',
     supplier: 'LuxeTextiles',
+    supplierUsername: 'luxetextiles-bd',
+    supplierType: 'retail', // Retail - Navy Blue
+    verified: true,
+    itemNumber: '88903-42',
+    brand: 'ELEGANCE SILK',
     price: 78.00,
     rating: 4.9,
     reviews: 89,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Silk',
+    attributes: {
+      fabric: 'Pure Silk',
+      composition: '100% Mulberry Silk',
+      style: 'Premium',
+      color: 'Champagne',
+      elasticity: 'Low',
+      season: 'All Season',
+      marketRegions: ['Bangladesh', 'Global']
+    }
   },
   {
     id: 4,
     name: 'Dyed Materials',
     supplier: 'PolyMaterial Corp',
+    supplierUsername: 'polymaterial-ng',
+    supplierType: 'company', // Company - Gold
+    verified: false,
+    itemNumber: '54210-08',
+    brand: 'VIBRANT COLOR',
     price: 28.99,
     rating: 4.5,
     reviews: 342,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Dyed',
+    attributes: {
+      fabric: 'Mixed',
+      composition: 'Cotton/Polyester Blend',
+      style: 'Colorful',
+      color: 'Various',
+      elasticity: 'Medium',
+      season: 'All Season',
+      marketRegions: ['Nigeria']
+    }
   },
   {
     id: 5,
     name: 'Organic Linen',
     supplier: 'EcoFabrics Ltd',
+    supplierUsername: 'ecofabrics-global',
+    supplierType: 'factory', // Factory - Green
+    verified: true,
+    itemNumber: '66780-19',
+    brand: 'ECO PURE',
     price: 56.00,
     rating: 4.7,
     reviews: 178,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Linen',
+    attributes: {
+      fabric: 'Organic Linen',
+      composition: '100% Organic Flax',
+      style: 'Natural',
+      color: 'Beige',
+      elasticity: 'Low',
+      season: 'Summer',
+      marketRegions: ['Global']
+    }
   },
   {
     id: 6,
     name: 'Stretch Jersey',
     supplier: 'KnitMasters Pro',
+    supplierUsername: 'knitmasters-bd',
+    supplierType: 'wholesaler', // Wholesaler - Teal
+    verified: true,
+    itemNumber: '33445-67',
+    brand: 'COMFORT KNIT',
     price: 42.75,
     rating: 4.8,
     reviews: 267,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Jersey',
+    attributes: {
+      fabric: 'Jersey',
+      composition: 'Cotton 85% / Elastane 15%',
+      style: 'Stretch',
+      color: 'White',
+      elasticity: 'Very High',
+      season: 'All Season',
+      marketRegions: ['Bangladesh', 'Global']
+    }
   },
   {
     id: 7,
     name: 'Canvas Heavy Duty',
     supplier: 'IndustrialFab',
+    supplierUsername: 'industrialfab-ng',
+    supplierType: 'factory', // Factory - Green
+    verified: true,
+    itemNumber: '99887-51',
+    brand: 'INDUSTRIAL PRO',
     price: 51.25,
     rating: 4.6,
     reviews: 145,
     category: 'industrial',
     image: 'https://via.placeholder.com/240x160?text=Canvas',
+    attributes: {
+      fabric: 'Canvas',
+      composition: 'Cotton 100%',
+      style: 'Heavy Duty',
+      color: 'Khaki',
+      elasticity: 'None',
+      season: 'All Season',
+      marketRegions: ['Nigeria', 'Global']
+    }
   },
   {
     id: 8,
     name: 'Satin Grade A',
     supplier: 'SatinCo Premium',
+    supplierUsername: 'satinco-bd',
+    supplierType: 'retail', // Retail - Navy Blue
+    verified: true,
+    itemNumber: '44556-93',
+    brand: 'PREMIUM SATIN',
     price: 68.50,
     rating: 4.9,
     reviews: 91,
     category: 'textiles',
     image: 'https://via.placeholder.com/240x160?text=Satin',
+    attributes: {
+      fabric: 'Satin',
+      composition: '100% Polyester Satin',
+      style: 'Premium',
+      color: 'Silver',
+      elasticity: 'Low',
+      season: 'All Season',
+      marketRegions: ['Bangladesh', 'Global']
+    }
+  },
+  {
+    id: 9,
+    name: 'Banadama Gold',
+    supplier: 'Banadama Textiles',
+    supplierUsername: 'banadama-gold',
+    supplierType: 'company', // Company - Gold
+    verified: true,
+    itemNumber: '55667-04',
+    brand: 'BANADAMA GOLD',
+    price: 95.00,
+    rating: 4.95,
+    reviews: 156,
+    category: 'textiles',
+    image: 'https://via.placeholder.com/240x160?text=Banadama+Gold',
+    attributes: {
+      fabric: 'Banadama Cotton Blend',
+      composition: '85% Cotton, 15% Gold Metallic',
+      style: 'Luxury',
+      color: 'Gold',
+      elasticity: 'Medium',
+      season: 'All Season',
+      marketRegions: ['Bangladesh', 'Nigeria', 'Global']
+    }
   },
 ];
 
@@ -176,6 +406,7 @@ export default function MarketplacePage() {
   const [searchCategory, setSearchCategory] = useState('all');
   const [categorySearchQuery, setCategorySearchQuery] = useState('');
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English – EN');
   const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
@@ -1352,57 +1583,352 @@ export default function MarketplacePage() {
               <div
                 key={product.id}
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(10px)',
-                  borderRadius: '16px',
+                  borderRadius: '12px',
                   overflow: 'hidden',
-                  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
-                  border: '1px solid rgba(255, 255, 255, 0.5)',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease',
-                  transform: hoveredProduct === product.id ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
-                  cursor: 'pointer',
+                  boxShadow: '0 4px 16px rgba(31, 38, 135, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
+                  transition: 'all 0.3s ease',
+                  transform: hoveredProduct === product.id ? 'translateY(-6px)' : 'translateY(0)',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
                 onMouseEnter={e => {
                   setHoveredProduct(product.id);
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(91, 197, 207, 0.25)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 28px rgba(91, 197, 207, 0.2)';
                 }}
                 onMouseLeave={e => {
                   setHoveredProduct(null);
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.15)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 16px rgba(31, 38, 135, 0.12)';
                 }}
               >
-                {/* Product Image */}
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{
-                    width: '100%',
-                    height: '240px',
-                    objectFit: 'cover',
-                  }}
-                />
+                {/* Product Image Container */}
+                <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#f0f0f0' }}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{
+                      width: '100%',
+                      height: '200px',
+                      objectFit: 'cover',
+                      transition: 'transform 0.3s ease',
+                      transform: hoveredProduct === product.id ? 'scale(1.05)' : 'scale(1)',
+                    }}
+                  />
+                  
+                  {/* Verification Badge */}
+                  {product.verified && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: getVerificationColor(product.supplierType),
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                      border: '2px solid white',
+                      title: 'Verified Seller'
+                    }}>
+                      <CheckIcon />
+                    </div>
+                  )}
+
+                  {/* Favorite & Share Buttons */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    right: '8px',
+                    display: 'flex',
+                    gap: '6px',
+                    opacity: hoveredProduct === product.id ? 1 : 0,
+                    transition: 'opacity 0.2s ease',
+                  }}>
+                    <button
+                      onClick={() => {
+                        const newFavorites = new Set(favorites);
+                        if (newFavorites.has(product.id)) {
+                          newFavorites.delete(product.id);
+                        } else {
+                          newFavorites.add(product.id);
+                        }
+                        setFavorites(newFavorites);
+                      }}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: favorites.has(product.id) ? '#ff4444' : 'white',
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        transition: 'all 0.2s ease',
+                        color: favorites.has(product.id) ? 'white' : '#333',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!favorites.has(product.id)) {
+                          e.currentTarget.style.background = '#f5f5f5';
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!favorites.has(product.id)) {
+                          e.currentTarget.style.background = 'white';
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }
+                      }}
+                      title="Add to favorites"
+                    >
+                      <HeartIcon filled={favorites.has(product.id)} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/marketplace?product=${product.id}`;
+                        const shareText = `Check out ${product.name} by ${product.supplier} on Banadama`;
+                        
+                        if (navigator.share) {
+                          navigator.share({ 
+                            title: product.name,
+                            text: shareText,
+                            url: shareUrl
+                          }).catch(() => {
+                            // Share was cancelled, do nothing
+                          });
+                        } else {
+                          // Fallback: Copy to clipboard
+                          const textToCopy = `${shareText}\n${shareUrl}`;
+                          navigator.clipboard.writeText(textToCopy).then(() => {
+                            // Show feedback
+                            const btn = event.currentTarget as HTMLButtonElement;
+                            const originalTitle = btn.title;
+                            btn.title = 'Link copied to clipboard!';
+                            setTimeout(() => {
+                              btn.title = originalTitle;
+                            }, 2000);
+                          }).catch(() => {
+                            // Fallback: alert if clipboard fails
+                            alert(`Share this product:\n${shareUrl}`);
+                          });
+                        }
+                      }}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: 'white',
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        transition: 'all 0.2s ease',
+                        color: '#333',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#5bc5cf';
+                        e.currentTarget.style.color = 'white';
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'white';
+                        e.currentTarget.style.color = '#333';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                      title="Share product (copy link or open native share)"
+                    >
+                      <ShareIcon />
+                    </button>
+                  </div>
+                </div>
 
                 {/* Product Info */}
-                <div style={{ padding: '16px' }}>
-                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>
-                    {product.supplier}
+                <div style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Item Number & Brand */}
+                  <div style={{ fontSize: '10px', color: '#999', marginBottom: '4px', fontWeight: '500' }}>
+                    Item #{product.itemNumber} • {product.brand}
                   </div>
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+
+                  {/* Seller Profile Card - Standard Marketplace Style */}
+                  <button
+                    onClick={() => router.push(`/supplier/studio/${product.supplierUsername}`)}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(91, 197, 207, 0.1) 0%, rgba(91, 197, 207, 0.05) 100%)',
+                      border: '1px solid rgba(91, 197, 207, 0.2)',
+                      padding: '10px',
+                      marginBottom: '10px',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                      borderRadius: '8px',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(91, 197, 207, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(91, 197, 207, 0.4)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(91, 197, 207, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(91, 197, 207, 0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(91, 197, 207, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                    title="Click to visit seller store"
+                  >
+                    {/* Header: Seller Name + Avatar */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {/* Profile Avatar */}
+                      <div style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #5bc5cf 0%, #4ab8c2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        border: '2px solid rgba(255,255,255,0.4)',
+                      }}>
+                        {product.supplier.charAt(0).toUpperCase()}
+                      </div>
+                      
+                      {/* Seller Name */}
+                      <div style={{ flex: 1, textAlign: 'left' }}>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: '#333', marginBottom: '2px' }}>
+                          {product.supplier}
+                        </div>
+                        {product.verified && (
+                          <div style={{ fontSize: '10px', color: getVerificationColor(product.supplierType), fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <span>✓</span> Verified Seller
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Arrow Icon */}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0, color: '#5bc5cf' }} aria-hidden="true">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                      </svg>
+                    </div>
+
+                    {/* Store Stats */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                      {/* Rating */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#666' }}>
+                        <span style={{ fontSize: '12px', color: '#ff9800', fontWeight: '600' }}>★</span>
+                        <span>{product.rating}</span>
+                      </div>
+                      
+                      {/* Reviews Count */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#666' }}>
+                        <span style={{ fontSize: '10px' }}>📝</span>
+                        <span>{product.reviews} reviews</span>
+                      </div>
+                    </div>
+
+                    {/* Store Description */}
+                    <div style={{
+                      fontSize: '10px',
+                      color: '#888',
+                      lineHeight: '1.3',
+                      padding: '6px 0',
+                      borderTop: '1px solid rgba(91, 197, 207, 0.1)',
+                      paddingTop: '6px'
+                    }}>
+                      Premium textile supplier with years of experience in quality fabrics and materials for wholesale and retail buyers.
+                    </div>
+
+                    {/* Call to Action */}
+                    <div style={{
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      color: '#5bc5cf',
+                      textAlign: 'center',
+                      padding: '6px 0',
+                      borderTop: '1px solid rgba(91, 197, 207, 0.1)',
+                      paddingTop: '6px'
+                    }}>
+                      View Store →
+                    </div>
+                  </button>
+
+                  {/* Product Name */}
+                  <h3 style={{ 
+                    fontSize: '13px', 
+                    fontWeight: '600', 
+                    marginBottom: '8px',
+                    lineHeight: 1.3,
+                    color: '#333',
+                    height: '32px',
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical'
+                  }}>
                     {product.name}
                   </h3>
 
-                  {/* Rating */}
-                  <div style={{ marginBottom: '8px' }}>{renderStars(product.rating)}</div>
+                  {/* Market Regions / Country Badges */}
+                  <div style={{
+                    display: 'flex',
+                    gap: '6px',
+                    alignItems: 'center',
+                    marginBottom: '8px',
+                    flexWrap: 'wrap',
+                    paddingBottom: '8px',
+                    borderBottom: '1px solid #f0f0f0',
+                  }}>
+                    {product.attributes?.marketRegions?.map((region: string) => {
+                      if (region.includes('Bangladesh')) return <BangladeshFlag key="bd" />;
+                      if (region.includes('Nigeria')) return <NigeriaFlag key="ng" />;
+                      if (region.includes('Global')) return <GlobalFlag key="global" />;
+                      return null;
+                    })}
+                    <span style={{ fontSize: '9px', color: '#999', fontWeight: '500' }}>
+                      {product.attributes?.marketRegions?.slice(0, 2).join(' • ')}
+                    </span>
+                  </div>
+
+                  {/* Product Attributes */}
+                  <div style={{ 
+                    fontSize: '10px', 
+                    color: '#888', 
+                    marginBottom: '8px',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '4px 8px',
+                    lineHeight: 1.4
+                  }}>
+                    <div>Fabric: {product.attributes.fabric}</div>
+                    <div>Style: {product.attributes.style}</div>
+                    <div>Color: {product.attributes.color}</div>
+                    <div>Elasticity: {product.attributes.elasticity}</div>
+                  </div>
+
+                  {/* Rating & Reviews */}
+                  <div style={{ marginBottom: '8px', fontSize: '11px' }}>
+                    {renderStars(product.rating)}
+                    <span style={{ color: '#999', marginLeft: '4px' }}>({product.reviews} reviews)</span>
+                  </div>
 
                   {/* Price */}
-                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#5bc5cf', marginBottom: '12px' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#5bc5cf', marginBottom: '10px' }}>
                     ${product.price.toFixed(2)}
                   </div>
 
                   {/* Buttons */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
                     <button
                       onClick={() => {
                         setCartCount(c => c + 1);
@@ -1428,37 +1954,39 @@ export default function MarketplacePage() {
                       }}
                       style={{
                         flex: 1,
-                        padding: '10px',
+                        padding: '8px',
                         backgroundColor: '#5bc5cf',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontWeight: '600',
-                        fontSize: '12px',
+                        fontSize: '11px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '6px',
+                        gap: '4px',
                         transition: 'background-color 0.2s ease',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#4ab8c2')}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#5bc5cf')}
+                      title="Add to cart"
                     >
                       <ShoppingBagIcon />
-                      Add to Cart
+                      Cart
                     </button>
                     <button
+                      onClick={() => router.push(`/supplier/studio/${product.supplierUsername}`)}
                       style={{
                         flex: 1,
-                        padding: '10px',
+                        padding: '8px',
                         backgroundColor: 'white',
                         color: '#5bc5cf',
-                        border: '2px solid #5bc5cf',
+                        border: '1.5px solid #5bc5cf',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontWeight: '600',
-                        fontSize: '12px',
+                        fontSize: '11px',
                         transition: 'all 0.2s ease',
                       }}
                       onMouseEnter={e => {
@@ -1469,8 +1997,9 @@ export default function MarketplacePage() {
                         e.currentTarget.style.backgroundColor = 'white';
                         e.currentTarget.style.color = '#5bc5cf';
                       }}
+                      title="Visit store"
                     >
-                      RFQ
+                      Store
                     </button>
                   </div>
                 </div>
@@ -1919,11 +2448,5 @@ const LanguageIcon = () => (
 const TrophyIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M6 9H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1m0 0h8m0 0h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-1m0 0V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4m6 0v10m-6-10V9m6 10H6"></path>
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5bc5cf" strokeWidth="3">
-    <polyline points="20 6 9 17 4 12"></polyline>
   </svg>
 );

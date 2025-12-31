@@ -37,5 +37,5 @@ dbClient.query = async function(sql: string, params: any[] = []) {
     return this.$queryRawUnsafe(query, ...values);
 };
 
-export const db = dbClient;
-export const prisma = dbClient;
+export const db: any = dbClient;
+export const prisma: any = dbClient;

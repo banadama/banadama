@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {
     Menu, MapPin, ChevronDown, Search, Bell, User, ShoppingCart
 } from 'lucide-react';
+import { AuthModal } from './AuthModal';
 
 interface MarketplaceHeaderProps {
     onMenuToggle: () => void;
@@ -27,6 +28,7 @@ export function MarketplaceHeader({
     userLocation = 'Nigeria',
 }: MarketplaceHeaderProps) {
     const [searchQuery, setSearchQuery] = useState('');
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,13 +88,16 @@ export function MarketplaceHeader({
                     </button>
 
                     <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-gray-200 ml-2">
-                        <Link href="/auth/login" className="flex flex-col items-start px-3 py-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+                        <button 
+                            onClick={() => setIsAuthModalOpen(true)}
+                            className="flex flex-col items-start px-3 py-1.5 hover:bg-gray-100 rounded-xl transition-colors"
+                        >
                             <span className="text-[10px] text-gray-500 leading-none">Hello, Sign in</span>
                             <div className="flex items-center gap-1 font-bold text-gray-900 text-sm leading-tight">
                                 Account & Lists
                                 <ChevronDown className="w-3 h-3 text-gray-400" />
                             </div>
-                        </Link>
+                        </button>
 
                         <Link href="/buyer/orders" className="hidden lg:flex flex-col items-start px-3 py-1.5 hover:bg-gray-100 rounded-xl transition-colors">
                             <span className="text-[10px] text-gray-500 leading-none">Returns</span>
@@ -109,6 +114,9 @@ export function MarketplaceHeader({
                             <span className="font-bold text-sm">Cart</span>
                         </Link>
                     </div>
+
+                    {/* Auth Modal */}
+                    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
                 </div>
             </div>
 

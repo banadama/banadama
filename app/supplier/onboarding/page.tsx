@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type OnboardingStep = 'role' | 'profile' | 'business' | 'logistics' | 'complete';
 
@@ -93,6 +94,20 @@ export default function SupplierOnboardingPage() {
     if (step === 'profile') setStep('role');
     else if (step === 'business') setStep('profile');
     else if (step === 'logistics') setStep('business');
+  };
+
+  const router = useRouter();
+
+  const handleGoToDashboard = () => {
+    // Use Next.js router to navigate within the app reliably
+    try {
+      router.push('/supplier/dashboard');
+    } catch (err) {
+      // Fallback to window.location if router fails
+      if (typeof window !== 'undefined') {
+        window.location.href = '/supplier/dashboard';
+      }
+    }
   };
 
   return (
@@ -322,8 +337,8 @@ export default function SupplierOnboardingPage() {
           <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>
             Your account is ready. Let's get your products live.
           </p>
-          <Link
-            href="/supplier/studio"
+          <button
+            onClick={handleGoToDashboard}
             style={{
               display: 'inline-block',
               backgroundColor: '#5bc5cf',
@@ -333,10 +348,12 @@ export default function SupplierOnboardingPage() {
               fontWeight: 700,
               textDecoration: 'none',
               transition: 'all 0.3s',
+              border: 'none',
+              cursor: 'pointer'
             }}
           >
             Go to Dashboard
-          </Link>
+          </button>
         </div>
       )}
 

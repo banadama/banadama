@@ -90,7 +90,7 @@ describe("Auth System", () => {
             );
 
             expect(payload.userId).toBe(testUser.id);
-            expect(payload.email).toBe(test User.email);
+            expect(payload.email).toBe(testUser.email);
             expect(payload.role).toBe(testUser.role);
             expect(payload.country).toBe(testUser.country);
             expect(payload.exp).toBeTruthy();
@@ -297,7 +297,7 @@ describe("Auth System", () => {
 
             mockCookies.mockResolvedValue(mockCookieStore as any);
 
-            await expectect(() => requireRole("BUYER")).rejects.toThrow();
+            await expect(requireRole("BUYER")).rejects.toThrow();
 
             expect(mockRedirect).toHaveBeenCalledWith("/auth/login");
         });
@@ -328,7 +328,7 @@ describe("Auth System", () => {
                 isActive: true,
             });
 
-            await expect(() => requireRole("ADMIN")).rejects.toThrow();
+            await expect(requireRole("ADMIN")).rejects.toThrow();
 
             expect(mockRedirect).toHaveBeenCalledWith("/auth/forbidden");
         });
@@ -390,13 +390,15 @@ describe("Auth System", () => {
 
     describe("getRoleDashboard", () => {
         it("should return correct dashboard for each role", () => {
-            expect(getRoleDashboard("BUYER" as Role)).toBe("/buyer/dashboard");
+            // SPEC: Buyers have NO dashboard - redirect to marketplace
+            expect(getRoleDashboard("BUYER" as Role)).toBe("/marketplace");
             expect(getRoleDashboard("SUPPLIER" as Role)).toBe("/supplier/dashboard");
-            expect(getRoleDashboard("CREATOR" as Role)).toBe("/creator/dashboard");
+            // SPEC: Creators and Affiliates use unified supplier domain
+            expect(getRoleDashboard("CREATOR" as Role)).toBe("/supplier/dashboard");
             expect(getRoleDashboard("OPS" as Role)).toBe("/ops/dashboard");
             expect(getRoleDashboard("ADMIN" as Role)).toBe("/admin/dashboard");
             expect(getRoleDashboard("AFFILIATE" as Role)).toBe(
-                "/affiliate/dashboard"
+                "/supplier/dashboard"
             );
         });
 
